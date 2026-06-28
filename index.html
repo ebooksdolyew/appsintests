@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana Resolvida</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Caveat:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vinho:      #5C1A2E;
+    --vinho-mid:  #7A2540;
+    --vinho-soft: #9E3D5A;
+    --dourado:    #C9963A;
+    --dourado-claro: #E2B96A;
+    --creme:      #F5ECD7;
+    --creme-escuro: #EDD9B8;
+    --papel:      #EDE4CF;
+    --texto:      #2E1018;
+    --texto-mid:  #5A2A38;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--papel);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(92,26,46,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 90%, rgba(201,150,58,0.08) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    font-family: 'Jost', sans-serif;
+    color: var(--texto);
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  /* PROGRESS */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--vinho), var(--dourado));
+    z-index: 500;
+    width: 0%;
+    transition: width 80ms linear;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: var(--vinho);
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 200;
+    border-bottom: 1px solid rgba(201,150,58,0.3);
+  }
+
+  .nav-logo {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dourado-claro);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,236,215,0.65);
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+
+  .nav-links a:hover { color: var(--dourado-claro); }
+
+  /* BOOK CONTAINER */
+  .book {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 80px 40px 100px;
+  }
+
+  /* ORNAMENT DIVIDER */
+  .ornament {
+    text-align: center;
+    margin: 48px 0;
+    color: var(--dourado);
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    opacity: 0.6;
+    letter-spacing: 0.3em;
+  }
+
+  /* SECTION LABEL */
+  .label {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--dourado);
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* COVER */
+  .cover {
+    min-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 0 72px;
+    border-bottom: 1px solid rgba(201,150,58,0.25);
+    position: relative;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    background: var(--vinho);
+    color: var(--dourado-claro);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 36px;
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+
+  .cover h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.8rem, 10vw, 6.5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    color: var(--vinho);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .cover h1 .script {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-weight: 700;
+    color: var(--dourado);
+    display: block;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+  }
+
+  .cover .tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--texto);
+    margin: 32px 0 48px;
+    max-width: 420px;
+    line-height: 1.65;
+  }
+
+  .cover-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--vinho);
+    color: var(--creme);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    padding: 14px 28px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 300ms ease;
+  }
+
+  .cover-cta:hover { background: var(--vinho-mid); }
+
+  .cover-rule {
+    margin-top: 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cover-rule hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid rgba(201,150,58,0.3);
+  }
+
+  .cover-rule span {
+    font-family: 'Caveat', cursive;
+    font-size: 1.2rem;
+    color: var(--dourado);
+    opacity: 0.5;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 64px 0;
+    border-bottom: 1px solid rgba(92,26,46,0.12);
+  }
+
+  section:last-child { border-bottom: none; }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    color: var(--vinho);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+
+  h2 em {
+    font-style: italic;
+    color: var(--dourado);
+    font-weight: 300;
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--vinho-mid);
+    margin: 44px 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-size: 1.08rem;
+    color: var(--texto);
+    margin-bottom: 20px;
+    font-weight: 400;
+    line-height: 1.9;
+  }
+
+  p strong {
+    font-weight: 600;
+    color: var(--texto);
+  }
+
+  /* CALLOUT */
+  .callout {
+    position: relative;
+    background: var(--vinho);
+    color: var(--creme);
+    padding: 28px 32px;
+    margin: 36px 0;
+    border-radius: 2px;
+    transform: rotate(-0.4deg);
+  }
+
+  .callout p {
+    color: rgba(245,236,215,0.95);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .callout::before {
+    content: '"';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    color: var(--dourado);
+    opacity: 0.25;
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    line-height: 1;
+  }
+
+  /* TIP LIST */
+  .tip-list {
+    list-style: none;
+    margin: 24px 0;
+  }
+
+  .tip-list li {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(92,26,46,0.1);
+    font-size: 1.05rem;
+    color: var(--texto);
+    font-weight: 400;
+    line-height: 1.8;
+  }
+
+  .tip-list li:last-child { border-bottom: none; }
+
+  .tip-num {
+    font-family: 'Caveat', cursive;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--dourado);
+    line-height: 1;
+    min-width: 32px;
+    margin-top: 2px;
+  }
+
+  /* REGRA 321 */
+  .rule-321 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .rule-card {
+    background: var(--vinho);
+    padding: 32px 20px;
+    text-align: center;
+    border-radius: 2px;
+  }
+
+  .rule-card:nth-child(1) { transform: rotate(-1.2deg); }
+  .rule-card:nth-child(2) { transform: rotate(0.5deg); background: var(--vinho-mid); }
+  .rule-card:nth-child(3) { transform: rotate(-0.8deg); background: var(--dourado); }
+
+  .rule-card .rn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--dourado-claro);
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .rule-card:nth-child(3) .rn { color: var(--vinho); }
+
+  .rule-card .rl {
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: rgba(245,236,215,0.9);
+    line-height: 1.4;
+  }
+
+  .rule-card:nth-child(3) .rl { color: rgba(92,26,46,0.85); }
+
+  /* RECIPES GRID */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 28px 0;
+  }
+
+  .recipe-card {
+    background: var(--creme-escuro);
+    border: 1px solid rgba(201,150,58,0.3);
+    padding: 22px 20px;
+    border-radius: 2px;
+    transition: background 250ms ease, transform 250ms ease;
+  }
+
+  .recipe-card:nth-child(odd)  { transform: rotate(-0.5deg); }
+  .recipe-card:nth-child(even) { transform: rotate(0.4deg); }
+
+  .recipe-card:hover {
+    background: var(--creme);
+    transform: rotate(0deg) translateY(-2px);
+  }
+
+  .r-time {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--dourado);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .r-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--vinho);
+    margin-bottom: 6px;
+  }
+
+  .r-desc {
+    font-size: 0.93rem;
+    color: var(--texto);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* MARKET TABLE */
+  .market-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 0.97rem;
+  }
+
+  .market-table thead tr {
+    background: var(--vinho);
+  }
+
+  .market-table th {
+    color: var(--dourado-claro);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 13px 16px;
+    text-align: left;
+  }
+
+  .market-table td {
+    padding: 13px 16px;
+    color: var(--texto);
+    font-weight: 400;
+    border-bottom: 1px solid rgba(92,26,46,0.1);
+    vertical-align: middle;
+  }
+
+  .market-table tr:nth-child(even) td {
+    background: rgba(237,217,184,0.4);
+  }
+
+  .market-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .badge-v { background: rgba(92,26,46,0.12); color: var(--vinho-mid); }
+  .badge-d { background: rgba(201,150,58,0.18); color: #7a5a1a; }
+
+  /* FREEZER LIST */
+  .freezer-list {
+    list-style: none;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .freezer-list li {
+    background: var(--creme-escuro);
+    border-left: 3px solid var(--dourado);
+    padding: 12px 16px;
+    font-size: 0.97rem;
+    color: var(--texto);
+    font-weight: 400;
+    transform: rotate(-0.3deg);
+  }
+
+  /* WEBAPP STEPS */
+  .webapp-steps {
+    list-style: none;
+    margin: 24px 0;
+    counter-reset: step;
+  }
+
+  .webapp-steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(92,26,46,0.1);
+  }
+
+  .webapp-steps li:last-child { border-bottom: none; }
+
+  .webapp-steps li::before {
+    content: counter(step);
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--vinho);
+    opacity: 0.25;
+    min-width: 32px;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .webapp-steps li .step-text {
+    font-size: 1.05rem;
+    color: var(--texto);
+    font-weight: 400;
+    line-height: 1.8;
+  }
+
+  .webapp-steps li .step-text strong {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--vinho);
+    margin-bottom: 4px;
+  }
+
+  /* CLOSING */
+  .closing {
+    background: var(--vinho);
+    padding: 64px 48px;
+    text-align: center;
+    border-radius: 2px;
+    transform: rotate(-0.3deg);
+    margin-top: 48px;
+  }
+
+  .closing h2 {
+    color: var(--creme);
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+
+  .closing h2 em { color: var(--dourado-claro); }
+
+  .closing p {
+    color: rgba(245,236,215,0.75);
+    max-width: 440px;
+    margin: 0 auto 36px;
+  }
+
+  .closing .btn {
+    display: inline-block;
+    background: var(--dourado);
+    color: var(--vinho);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 15px 36px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 250ms ease;
+  }
+
+  .closing .btn:hover { background: var(--dourado-claro); }
+
+  @media (max-width: 600px) {
+    .book { padding: 80px 20px 60px; }
+    .nav-links { display: none; }
+    .recipes-grid { grid-template-columns: 1fr; }
+    .rule-321 { grid-template-columns: 1fr; }
+    .freezer-list { grid-template-columns: 1fr; }
+    .closing { padding: 40px 24px; }
+    .callout { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="bar"></div>
+
+<nav>
+  <span class="nav-logo">Semana Resolvida</span>
+  <ul class="nav-links">
+    <li><a href="#intro">Introdução</a></li>
+    <li><a href="#problema">O Problema</a></li>
+    <li><a href="#metodo">O Método</a></li>
+    <li><a href="#mercado">Mercado</a></li>
+    <li><a href="#receitas">Receitas</a></li>
+    <li><a href="#webapp">WebApp</a></li>
+  </ul>
+</nav>
+
+<div class="book">
+
+  <!-- CAPA -->
+  <section class="cover" id="capa">
+    <span class="cover-badge">eBook — Planejamento para Mães</span>
+    <h1>
+      Semana
+      <span class="script">Resolvida</span>
+    </h1>
+    <p class="tagline">O guia da mãe que parou de improvisar na cozinha e passou a viver com mais leveza.</p>
+    <a href="#intro" class="cover-cta">Começar a leitura &rarr;</a>
+    <div class="cover-rule">
+      <hr><span>&#10022;</span><hr>
+    </div>
+  </section>
+
+  <!-- INTRODUÇÃO -->
+  <section id="intro">
+    <span class="label">Introdução</span>
+    <h2>São 17h. Você saiu do trabalho e ainda não sabe o que vai ter <em>no jantar.</em></h2>
+
+    <div class="callout">
+      <p>Trabalho o dia inteiro, busco meu filho na escola, chego em casa destruída — e ainda precisa ter comida na mesa. Todo dia. Todo. Dia.</p>
+    </div>
+
+    <p>Se você se reconheceu aí, saiba que <strong>não é falta de organização.</strong> É falta de um sistema que funcione pra sua realidade — não pra uma influencer com chef em casa.</p>
+    <p>Este guia não vai pedir que você acorde mais cedo, cozinhe por 3 horas no domingo ou vire expert em nutrição. Ele vai te dar <strong>um método simples</strong> que cabe na sua vida do jeito que ela é.</p>
+    <p>30 minutos de planejamento por semana. É tudo que você precisa.</p>
+  </section>
+
+  <!-- O PROBLEMA -->
+  <section id="problema">
+    <span class="label">Parte 1</span>
+    <h2>Por que você vive no improviso — e <em>não é culpa sua</em></h2>
+
+    <p>A maioria das mães que trabalham fora passa por três ciladas sem perceber:</p>
+
+    <ul class="tip-list">
+      <li>
+        <span class="tip-num">1</span>
+        <div><strong>O ciclo do "hoje eu decido"</strong><br>
+        Acordar sem saber o que vai ter no almoço ou jantar gera micro-decisões que acumulam cansaço mental. Até a hora de cozinhar, você já tomou centenas de decisões no trabalho — e não sobrou energia pra mais uma.</div>
+      </li>
+      <li>
+        <span class="tip-num">2</span>
+        <div><strong>O custo invisível do improviso</strong><br>
+        Delivery de urgência, compras avulsas no mercado, ingredientes que estragam porque não entraram em nenhuma receita. O improviso custa mais dinheiro e mais tempo do que qualquer planejamento.</div>
+      </li>
+      <li>
+        <span class="tip-num">3</span>
+        <div><strong>O planejamento que não foi feito pra você</strong><br>
+        Planilhas complexas, aplicativos que pedem cadastro de 200 ingredientes, cardápios de nutricionista que ignoram que você trabalha 8h por dia. Nada funciona porque nada foi pensado pra sua realidade.</div>
+      </li>
+    </ul>
+
+    <p>A solução não é fazer mais. É <strong>decidir menos</strong> — e no momento certo.</p>
+  </section>
+
+  <!-- MÉTODO -->
+  <section id="metodo">
+    <span class="label">Parte 2</span>
+    <h2>O Método <em>Semana Resolvida</em></h2>
+
+    <h3>O domingo de 30 minutos que muda tudo</h3>
+    <p>Reserve 30 minutos no domingo à tarde. Só isso. Sem receitas elaboradas, sem planilhas — apenas responder três perguntas:</p>
+
+    <ul class="tip-list">
+      <li><span class="tip-num">→</span><div><strong>O que tenho em casa</strong> que precisa ser usado essa semana?</div></li>
+      <li><span class="tip-num">→</span><div><strong>Quais dias vou ter mais tempo</strong> para cozinhar?</div></li>
+      <li><span class="tip-num">→</span><div><strong>O que posso repetir</strong> ou reaproveitar de outra forma?</div></li>
+    </ul>
+
+    <h3>A Regra do 3-2-1</h3>
+    <p>A estrutura que torna o planejamento simples e sustentável:</p>
+
+    <div class="rule-321">
+      <div class="rule-card">
+        <div class="rn">3</div>
+        <div class="rl">Receitas novas na semana</div>
+      </div>
+      <div class="rule-card">
+        <div class="rn">2</div>
+        <div class="rl">Refeições repetidas</div>
+      </div>
+      <div class="rule-card">
+        <div class="rn">1</div>
+        <div class="rl">Coringa do freezer</div>
+      </div>
+    </div>
+
+    <p>Três pratos novos por semana é suficiente pra variar sem sobrecarregar. Dois dias você repete — e ninguém vai reclamar se a comida for boa. Um dia você usa o que tem no freezer. <strong>Zero improviso.</strong></p>
+
+    <h3>Reaproveitamento inteligente</h3>
+    <p>O frango assado de segunda vira salada de terça. O arroz de quarta vira bolinho de sexta. O feijão de quinta vira sopa no fim de semana. <strong>Cozinhar uma vez, comer três</strong> — esse é o princípio.</p>
+
+    <div class="callout">
+      <p>Não existe desperdício num lar que planeja. Existe ingrediente esperando a próxima receita.</p>
+    </div>
+  </section>
+
+  <!-- MERCADO -->
+  <section id="mercado">
+    <span class="label">Parte 3</span>
+    <h2>Lista de compras que <em>funciona de verdade</em></h2>
+
+    <p>A lista certa não é uma lista de ingredientes — é uma lista <strong>por categoria.</strong> Você anda mais rápido no mercado, não esquece nada e não compra o que não vai usar.</p>
+
+    <table class="market-table">
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Frequência</th>
+          <th>Dica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Proteínas — frango, carne, ovo, peixe</td>
+          <td><span class="badge badge-v">Semanal</span></td>
+          <td>Compre 2 tipos e alterne</td>
+        </tr>
+        <tr>
+          <td>Grãos — arroz, feijão, macarrão</td>
+          <td><span class="badge badge-d">Quinzenal</span></td>
+          <td>Estoque sem medo</td>
+        </tr>
+        <tr>
+          <td>Legumes e verduras</td>
+          <td><span class="badge badge-v">Semanal</span></td>
+          <td>Compre o que vai no cardápio, não o que parece bonito</td>
+        </tr>
+        <tr>
+          <td>Frutas</td>
+          <td><span class="badge badge-v">Semanal</span></td>
+          <td>3 tipos por semana é suficiente</td>
+        </tr>
+        <tr>
+          <td>Laticínios — queijo, iogurte, leite</td>
+          <td><span class="badge badge-v">Semanal</span></td>
+          <td>Verifique o que tem antes de comprar</td>
+        </tr>
+        <tr>
+          <td>Temperos e óleos</td>
+          <td><span class="badge badge-d">Mensal</span></td>
+          <td>Sempre tenha alho, limão e azeite</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>O que vale ter sempre no freezer</h3>
+    <ul class="freezer-list">
+      <li>Frango temperado em porções individuais</li>
+      <li>Legumes picados — chuchu, abobrinha, cenoura</li>
+      <li>Arroz e feijão prontos em potes de 2 porções</li>
+      <li>Molho de tomate em cubinhos de gelo</li>
+      <li>Pão de forma — dura até 3 meses</li>
+      <li>Carne moída já refogada e temperada</li>
+    </ul>
+  </section>
+
+  <!-- RECEITAS -->
+  <section id="receitas">
+    <span class="label">Parte 4</span>
+    <h2>20 receitas rápidas <em>pra semana</em></h2>
+    <p>Todas prontas em até 30 minutos. Ingredientes simples. Aprovadas por filho exigente.</p>
+
+    <h3>Jantares rápidos</h3>
+    <div class="recipes-grid">
+      <div class="recipe-card">
+        <p class="r-time">20 min</p>
+        <p class="r-name">Frango ao limão com alho</p>
+        <p class="r-desc">Filé fininho, frigideira quente, limão, alho e azeite. Serve com arroz ou pão.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">25 min</p>
+        <p class="r-name">Macarrão ao molho rápido</p>
+        <p class="r-desc">Molho do freezer com atum ou carne moída. Pronto enquanto o macarrão cozinha.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">15 min</p>
+        <p class="r-name">Omelete de forno</p>
+        <p class="r-desc">4 ovos, legumes picados, queijo. No forno enquanto você descansa.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">30 min</p>
+        <p class="r-name">Carne moída com legumes</p>
+        <p class="r-desc">Serve com arroz, em tortilla, sobre batata ou recheando pão.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">20 min</p>
+        <p class="r-name">Sopa de feijão rápida</p>
+        <p class="r-desc">Feijão do freezer, linguiça e couve. Comfort food em meia hora.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">15 min</p>
+        <p class="r-name">Peixe na frigideira</p>
+        <p class="r-desc">Tilápia ou merluza com sal, pimenta e limão. 15 minutos, sem segredo.</p>
+      </div>
+    </div>
+
+    <h3>Marmitas que duram até quinta</h3>
+    <div class="recipes-grid">
+      <div class="recipe-card">
+        <p class="r-time">Marmita</p>
+        <p class="r-name">Frango desfiado com legumes</p>
+        <p class="r-desc">Faz 3 porções. Dura 4 dias. Serve quente ou frio na salada.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">Marmita</p>
+        <p class="r-name">Grão-de-bico ao curry</p>
+        <p class="r-desc">Barato, proteico, saboroso. Fica ainda melhor no dia seguinte.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">Marmita</p>
+        <p class="r-name">Arroz integral com cenoura e ovo</p>
+        <p class="r-desc">Nutritivo, fácil, agrada criança. Tempero simples que todo mundo aceita.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">Marmita</p>
+        <p class="r-name">Carne de panela simples</p>
+        <p class="r-desc">Faz no domingo, dura a semana. Com batata, cenoura e muito caldo.</p>
+      </div>
+    </div>
+
+    <h3>Lanches rápidos pro filho</h3>
+    <div class="recipes-grid">
+      <div class="recipe-card">
+        <p class="r-time">5 min</p>
+        <p class="r-name">Tapioca com queijo e presunto</p>
+        <p class="r-desc">Clássico que nunca falha. Adiciona fruta cortada do lado.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">10 min</p>
+        <p class="r-name">Vitamina de banana com aveia</p>
+        <p class="r-desc">Banana, leite ou iogurte, aveia e mel. Sustenta por horas.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">5 min</p>
+        <p class="r-name">Pão com pasta de atum</p>
+        <p class="r-desc">Atum, cream cheese e limão. Saudável, proteico e gostoso.</p>
+      </div>
+      <div class="recipe-card">
+        <p class="r-time">15 min</p>
+        <p class="r-name">Bolinho de arroz</p>
+        <p class="r-desc">Aproveita o arroz do dia anterior. Recheado com queijo na airfryer.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p>A receita coringa: arroz de forno com ovo, queijo e o que tiver na geladeira. 20 minutos. Funciona sempre — pode colocar toda sexta sem vergonha.</p>
+    </div>
+  </section>
+
+  <!-- WEBAPP -->
+  <section id="webapp">
+    <span class="label">Parte 5</span>
+    <h2>Usando o WebApp junto <em>com o método</em></h2>
+
+    <p>O eBook te deu o método. O WebApp é onde você coloca em prática — sem papel, sem planilha, direto do celular.</p>
+
+    <ol class="webapp-steps">
+      <li>
+        <div class="step-text">
+          <strong>No domingo</strong>
+          Abra o planejador semanal e preencha os 7 dias seguindo a Regra do 3-2-1. Leva 10 minutos.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Gere a lista de compras</strong>
+          O app monta automaticamente a lista por categoria com base no que você planejou.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Durante a semana</strong>
+          Consulte o cardápio do dia e marque o que já foi feito. Nada de improvisar.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Controle do freezer</strong>
+          Registre o que guardou e quando. Nunca mais freezer misterioso.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout">
+      <p>O WebApp funciona direto no celular, sem instalar nada. Abre no navegador e já funciona. Incluso neste combo.</p>
+    </div>
+  </section>
+
+  <!-- ENCERRAMENTO -->
+  <section>
+    <div class="closing">
+      <h2>Você não precisa ser chef.<br><em>Você precisa de um plano.</em></h2>
+      <p>Uma semana resolvida não é perfeição. É leveza. É chegar em casa sabendo o que vai ter na mesa — e ter energia pra curtir o resto da noite com quem você ama.</p>
+      <a href="#" class="btn">Acessar o WebApp</a>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('bar').style.width = pct + '%';
+  });
+</script>
+
+</body>
+</html>
