@@ -314,7 +314,7 @@ const GREETINGS = {
 
 let state = {
   level:'A1', xp:0, streak:0, lastPractice:null, daysPracticed:0, totalTurns:0,
-  settings:{ rate:0.92, pitch:1.15, accent:'es-ES', speakLang:'es' }
+  settings:{ rate:0.92, pitch:1.15, accent:'es-US', speakLang:'es' }
 };
 let history = [];        // {role, content} para a API
 let onboarded = false;
@@ -794,6 +794,7 @@ function showSettings(){
           <option value="es-ES">Espanha (es-ES)</option>
           <option value="es-MX">México (es-MX)</option>
           <option value="es-AR">Argentina (es-AR)</option>
+          <option value="es-US">Estados Unidos (es-US)</option>
         </select>
       </div>
       <div class="set-row">
