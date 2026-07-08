@@ -432,7 +432,6 @@ function speak(text, orbFx=true){ speakSeq([{text, lang:state.settings.accent}],
 /* monta a fala da Lucía: apoio em PT (se houver) e depois a prática em ES */
 function tutorParts(d){
   const arr=[];
-  if(d.reply_pt) arr.push({text:d.reply_pt, lang:'pt-BR'});
   if(d.reply_es) arr.push({text:d.reply_es, lang:state.settings.accent});
   return arr;
 }
