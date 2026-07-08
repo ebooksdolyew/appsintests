@@ -1,867 +1,858 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Semana Resolvida — Planejador</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Caveat:wght@500;600;700&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Charla · seu professor de espanhol por voz</title>
+<script src="https://js.puter.com/v2/"></script>
 <style>
-  :root {
-    --vinho:      #5C1A2E;
-    --vinho-mid:  #7A2540;
-    --dourado:    #C9963A;
-    --dourado-claro: #E2B96A;
-    --creme:      #F5ECD7;
-    --creme-escuro: #E8D9B8;
-    --papel:      #EFE6D2;
-    --texto:      #241016;
-    --verde:      #5B7A52;
-    --shadow:     0 4px 16px rgba(92,26,46,0.12);
-  }
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,600&family=Epilogue:wght@400;500;600;700&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-  html { scroll-behavior: smooth; }
+:root{
+  --bark:#E1D5BC;        /* warm sand page background (light) */
+  --bark-2:#ECE2CC;      /* raised surface: cards, bubbles, chips */
+  --bark-3:#E7DCC4;      /* inputs / secondary cards */
+  --sand:#2C251F;        /* PRIMARY TEXT — deep espresso on light */
+  --oat:#786A56;         /* muted warm-brown text */
+  --terra:#C15E36;       /* terracotta accent */
+  --ochre:#916516;       /* dark gold — readable on light */
+  --clay:#9B7458;        /* clay */
+  --moss:#5A6733;        /* moss */
+  --sage:#4E5E33;        /* deep sage — readable on light */
+  --line:rgba(44,37,31,.12);
+  --line-2:rgba(44,37,31,.22);
+}
 
-  /* every interactive element responds instantly to taps */
-  button, .day, .opt, .type-btn, .ing, .fdel, .nav-item, .clear-link,
-  .frz-item .fdel, [onclick] { touch-action: manipulation; cursor: pointer; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Epilogue',system-ui,sans-serif;
+  background:var(--bark);
+  color:var(--sand);
+  overflow:hidden;
+  position:fixed;
+  inset:0;
+  overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+}
+/* grain overlay */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-  body {
-    background-color: var(--papel);
-    background-image:
-      radial-gradient(ellipse at 15% 0%, rgba(92,26,46,0.06) 0%, transparent 45%),
-      radial-gradient(ellipse at 85% 100%, rgba(201,150,58,0.09) 0%, transparent 45%);
-    font-family: 'Jost', sans-serif;
-    color: var(--texto);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    padding-bottom: 84px;
-  }
+h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
 
-  .app { max-width: 480px; margin: 0 auto; padding: 0 18px; }
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ochre);outline-offset:3px;border-radius:8px}
 
-  /* ---------- HEADER ---------- */
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 4px 14px;
-  }
-  .topbar .brand {
-    font-family: 'Caveat', cursive;
-    font-size: 1.9rem; font-weight: 700;
-    color: var(--vinho); line-height: 1;
-  }
-  .topbar .brand small {
-    display: block;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.62rem; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--dourado); margin-top: 2px;
-  }
-  .topbar .today-chip {
-    font-size: 0.72rem; font-weight: 600;
-    background: var(--vinho); color: var(--creme);
-    padding: 6px 14px; border-radius: 999px;
-    text-transform: capitalize;
-  }
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:640px;margin:0 auto;position:relative}
 
-  /* ---------- SCREENS ---------- */
-  .screen { display: none; animation: fade .25s ease; }
-  .screen.active { display: block; }
-  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+/* ---------- Header ---------- */
+.top{padding:16px 20px 10px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;flex-direction:column;line-height:1}
+.brand .name{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--sand)}
+.brand .tag{font-size:11px;color:var(--oat);margin-top:3px;letter-spacing:.02em}
+.spacer{flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;background:var(--bark-3);
+  border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12.5px;color:var(--sand)
+}
+.chip.streak{color:var(--terra)}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--bark-3);border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--oat);transition:.25s}
+.icon-btn:hover{color:var(--sand);border-color:var(--line-2)}
 
-  .screen-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem; font-weight: 700; color: var(--vinho);
-    line-height: 1.1; margin: 6px 4px 4px;
-  }
-  .screen-title em { font-style: italic; color: var(--dourado); }
-  .screen-sub {
-    font-size: 0.92rem; color: var(--texto); opacity: 0.75;
-    margin: 0 4px 18px; font-weight: 400;
-  }
+/* level bar */
+.levelrow{padding:0 20px 8px;display:flex;align-items:center;gap:12px}
+.level-badge{font-family:'Fraunces',serif;font-size:13px;color:var(--ochre);white-space:nowrap;font-weight:600}
+.xpbar{flex:1;height:6px;background:var(--bark-3);border-radius:999px;overflow:hidden}
+.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--moss),var(--ochre));border-radius:999px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.xp-num{font-size:11px;color:var(--oat);white-space:nowrap}
 
-  /* ---------- CARDS ---------- */
-  .card {
-    background: var(--creme);
-    border: 1.5px solid rgba(201,150,58,0.45);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-  }
-  .card.wine { background: var(--vinho); border-color: var(--vinho); color: var(--creme); }
-  .card.wine .c-label { color: var(--dourado-claro); }
-  .card.wine .c-big   { color: var(--creme); }
+/* theme chip */
+.themebar{padding:2px 20px 6px}
+.theme-chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--sand);
+  background:rgba(96,108,56,.16);border:1px solid rgba(139,157,131,.25);border-radius:999px;padding:6px 12px;transition:.25s}
+.theme-chip:hover{background:rgba(96,108,56,.26)}
+.theme-chip b{font-weight:600;color:var(--sage)}
 
-  .c-label {
-    font-family: 'Jost', sans-serif;
-    font-size: 0.68rem; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--dourado); margin-bottom: 8px;
-  }
-  .c-big {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem; font-weight: 700; color: var(--vinho);
-    line-height: 1.15;
-  }
-  .c-muted { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+/* ---------- Conversation ---------- */
+.stream{flex:1;overflow-y:auto;padding:12px 20px 8px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+.stream::-webkit-scrollbar{width:6px}
+.stream::-webkit-scrollbar-thumb{background:var(--bark-3);border-radius:99px}
 
-  /* progress bar */
-  .pbar { height: 10px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; margin-top: 14px; }
-  .pbar > i { display: block; height: 100%; background: var(--dourado); border-radius: 999px; transition: width .4s ease; }
-  .pbar-num { font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: 700; color: var(--dourado-claro); }
+.msg{max-width:88%;animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end}
+.bubble{padding:13px 16px;border-radius:20px;font-size:15.5px;line-height:1.5}
+.user .bubble{background:#A9502B;color:#fff;border-bottom-right-radius:7px}
+.tutor{align-self:flex-start;display:flex;gap:11px}
+.avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  background:radial-gradient(circle at 32% 28%,#E0A032,#C15E36 70%);
+  display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:600;color:#fff;font-size:16px}
+.tutor .body{min-width:0}
+.tutor .bubble{background:var(--bark-2);color:var(--sand);border:1px solid var(--line);border-bottom-left-radius:7px}
+.tutor .name{font-size:11px;color:var(--oat);margin:0 0 5px 4px;letter-spacing:.04em}
 
-  /* ---------- BUTTONS ---------- */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font-family: 'Jost', sans-serif; font-size: 0.92rem; font-weight: 600;
-    border: none; cursor: pointer; border-radius: 12px;
-    padding: 13px 20px; width: 100%;
-    transition: transform .12s ease, background .2s ease;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--vinho); color: var(--creme); }
-  .btn-primary:hover { background: var(--vinho-mid); }
-  .btn-gold { background: var(--dourado); color: var(--vinho); }
-  .btn-gold:hover { background: var(--dourado-claro); }
-  .btn-ghost { background: transparent; color: var(--vinho); border: 1.5px solid var(--vinho); }
-  .btn-sm { width: auto; padding: 9px 16px; font-size: 0.82rem; }
+.pt-hint{font-size:13px;color:var(--oat);font-style:italic;margin-top:8px;padding-left:4px;
+  border-left:2px solid var(--line-2);padding:2px 0 2px 10px;display:none}
+.pt-hint.show{display:block}
 
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pt-say{margin-top:9px;background:rgba(90,103,51,.13);border:1px solid rgba(90,103,51,.28);
+  border-radius:14px;padding:9px 12px;font-size:14px;line-height:1.5;color:var(--sand)}
+.pt-say .lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--moss);display:block;margin-bottom:3px}
 
-  /* ---------- 3-2-1 COUNTERS ---------- */
-  .counters { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 18px; }
-  .counter {
-    text-align: center; padding: 14px 6px; border-radius: 14px;
-    border: 1.5px solid var(--vinho); background: var(--creme);
-  }
-  .counter.over { background: #f3dada; border-color: #b3402f; }
-  .counter .cn {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 700;
-    color: var(--vinho); line-height: 1;
-  }
-  .counter.over .cn { color: #9c2b1d; }
-  .counter .cl {
-    font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600;
-    color: var(--dourado); margin-top: 2px;
-  }
+.correction{margin-top:9px;background:rgba(198,107,61,.10);border:1px solid rgba(198,107,61,.3);
+  border-radius:13px;padding:9px 12px;font-size:13.5px;color:var(--sand)}
+.correction .lbl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--terra);display:block;margin-bottom:3px}
 
-  /* ---------- DAY LIST ---------- */
-  .day {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--creme); border: 1.5px solid rgba(201,150,58,0.4);
-    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
-    cursor: pointer; transition: border-color .2s ease, transform .12s ease;
-  }
-  .day:active { transform: scale(0.99); }
-  .day:hover { border-color: var(--dourado); }
-  .day .dname {
-    font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.1rem;
-    color: var(--vinho); min-width: 64px; text-transform: capitalize;
-  }
-  .day .dmeal { flex: 1; font-size: 0.95rem; font-weight: 500; }
-  .day .dmeal.empty { color: var(--texto); opacity: 0.4; font-style: italic; font-weight: 400; }
-  .day .dtag {
-    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 3px 9px; border-radius: 999px; flex-shrink: 0;
-  }
-  .tag-nova { background: var(--vinho); color: var(--creme); }
-  .tag-rep  { background: var(--dourado); color: var(--vinho); }
-  .tag-frz  { background: #2f5d6b; color: var(--creme); }
-  .day .chev { color: var(--dourado); flex-shrink: 0; }
+.words{margin-top:9px;display:flex;flex-wrap:wrap;gap:7px}
+.word{background:var(--bark-3);border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12.5px}
+.word b{color:var(--ochre);font-weight:600}
+.word span{color:var(--oat)}
 
-  /* ---------- SHOPPING ---------- */
-  .cat-block { margin-bottom: 18px; }
-  .cat-head {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700;
-    color: var(--vinho-mid); margin: 0 2px 8px; display: flex; align-items: center; gap: 8px;
-  }
-  .cat-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dourado); }
-  .ing {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--creme); border: 1.5px solid rgba(201,150,58,0.35);
-    border-radius: 12px; padding: 11px 14px; margin-bottom: 7px; cursor: pointer;
-    transition: opacity .2s ease;
-  }
-  .ing .box {
-    width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--vinho);
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    transition: background .2s ease;
-  }
-  .ing .box svg { opacity: 0; }
-  .ing.have { opacity: 0.5; }
-  .ing.have .box { background: var(--verde); border-color: var(--verde); }
-  .ing.have .box svg { opacity: 1; }
-  .ing.have .iname { text-decoration: line-through; }
-  .ing .iname { font-size: 0.95rem; font-weight: 500; }
-  .ing .ifrom { font-size: 0.72rem; opacity: 0.6; margin-left: auto; text-align: right; }
+.acts{display:flex;flex-wrap:wrap;gap:8px 16px;margin:9px 0 0 4px}
+.act{font-size:12.5px;color:var(--oat);display:inline-flex;align-items:center;gap:5px;transition:.2s;
+  min-height:32px;padding:2px 0}
+.act:hover{color:var(--sand)}
+.act svg{width:14px;height:14px}
 
-  /* ---------- FREEZER ---------- */
-  .frz-add { display: flex; gap: 8px; margin-bottom: 16px; }
-  .frz-add input {
-    flex: 1; font-family: 'Jost', sans-serif; font-size: 0.95rem;
-    border: 1.5px solid var(--vinho); border-radius: 12px; padding: 12px 14px;
-    background: var(--creme); color: var(--texto);
-  }
-  .frz-add input:focus { outline: none; border-color: var(--dourado); }
-  .frz-item {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--creme); border: 1.5px solid rgba(201,150,58,0.35);
-    border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
-  }
-  .frz-item.old { border-color: #b3402f; background: #f7e7e2; }
-  .frz-item .fic { width: 30px; height: 30px; flex-shrink: 0; color: #2f5d6b; }
-  .frz-item .fname { font-weight: 600; font-size: 0.95rem; }
-  .frz-item .fdate { font-size: 0.74rem; opacity: 0.7; }
-  .frz-item .fwarn { font-size: 0.66rem; font-weight: 700; color: #9c2b1d; text-transform: uppercase; letter-spacing: 0.04em; }
-  .frz-item .fdel { margin-left: auto; cursor: pointer; color: var(--vinho); opacity: 0.5; padding: 4px; }
-  .frz-item .fdel:hover { opacity: 1; }
+.explain-box{margin-top:9px;background:var(--bark-3);border:1px solid var(--line);border-radius:13px;
+  padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--sand);white-space:pre-wrap}
+.explain-box .lbl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);display:block;margin-bottom:6px}
 
-  /* ---------- HOJE ---------- */
-  .hoje-hero {
-    background: var(--vinho); border: 2px solid var(--dourado);
-    border-radius: 20px; padding: 36px 26px; text-align: center; box-shadow: var(--shadow);
-  }
-  .hoje-day { font-family: 'Caveat', cursive; font-size: 1.5rem; color: var(--dourado-claro); text-transform: capitalize; }
-  .hoje-meal {
-    font-family: 'Cormorant Garamond', serif; font-size: 2.3rem; font-weight: 700;
-    color: var(--creme); line-height: 1.1; margin: 8px 0 4px;
-  }
-  .hoje-meal.empty { font-size: 1.5rem; opacity: 0.7; font-style: italic; }
-  .hoje-type { font-size: 0.78rem; font-weight: 600; color: var(--dourado-claro); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; }
-  .hoje-done-badge {
-    display: none; font-family: 'Caveat', cursive; font-size: 1.6rem; font-weight: 700;
-    color: var(--dourado-claro); margin-top: 8px;
-  }
-  .hoje-hero.done .hoje-done-badge { display: block; }
-  .hoje-hero.done .btn { display: none; }
+.typing{display:flex;gap:5px;padding:4px 2px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--oat);animation:blink 1.3s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
 
-  /* ---------- RECIPE DETAIL ---------- */
-  .recipe-detail { margin-top: 4px; }
-  .recipe-detail.in-sheet {
-    margin-top: 18px; padding-top: 18px;
-    border-top: 1.5px dashed rgba(201,150,58,0.55);
-  }
-  .rd-title {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 700;
-    color: var(--vinho); line-height: 1.1;
-  }
-  .rd-title .rd-time { font-family: 'Jost', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--dourado); }
-  .rd-label {
-    font-family: 'Jost', sans-serif; font-size: 0.64rem; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--dourado);
-    margin: 16px 0 9px;
-  }
-  .rd-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-  .rd-chip {
-    background: var(--creme-escuro); border: 1px solid rgba(201,150,58,0.45);
-    border-radius: 999px; padding: 6px 13px; font-size: 0.82rem; font-weight: 500; color: var(--vinho);
-  }
-  .rd-steps { list-style: none; counter-reset: st; margin-top: 2px; }
-  .rd-steps li {
-    counter-increment: st; display: flex; gap: 12px; align-items: flex-start;
-    padding: 8px 0; font-size: 0.92rem; font-weight: 400; line-height: 1.5;
-  }
-  .rd-steps li::before {
-    content: counter(st); flex-shrink: 0;
-    width: 24px; height: 24px; background: var(--vinho); color: var(--creme);
-    border-radius: 50%; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 0.95rem;
-    display: flex; align-items: center; justify-content: center; line-height: 1; margin-top: 1px;
-  }
+/* ---------- Composer / Orb ---------- */
+.dock{padding:8px 20px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bark) 22%)}
+.orb-wrap{display:flex;flex-direction:column;align-items:center;gap:9px}
+.orb-status{font-size:12.5px;color:var(--oat);height:16px;letter-spacing:.02em;text-align:center}
+.orb-status b{color:var(--terra);font-weight:600}
+.lang-seg{display:inline-flex;background:var(--bark-3);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:2px}
+.lang-seg button{font-size:12.5px;color:var(--oat);padding:7px 15px;border-radius:999px;transition:.2s;min-height:34px;font-weight:500}
+.lang-seg button.active{background:var(--terra);color:#fff}
+.lang-seg button:not(.active):hover{color:var(--sand)}
 
-  /* ---------- MODAL (bottom sheet) ---------- */
-  .sheet-bg {
-    position: fixed; inset: 0; background: rgba(36,16,22,0.55);
-    display: none; align-items: flex-end; justify-content: center; z-index: 90;
-    animation: fade .2s ease;
-  }
-  .sheet-bg.show { display: flex; }
-  .sheet {
-    background: var(--papel); width: 100%; max-width: 480px;
-    border-radius: 22px 22px 0 0; padding: 22px 20px 30px;
-    box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
-    animation: slideup .28s cubic-bezier(.2,.8,.2,1);
-    max-height: 82vh; overflow-y: auto;
-  }
-  @keyframes slideup { from { transform: translateY(100%);} to { transform: none; } }
-  .sheet-grip { width: 42px; height: 5px; background: var(--dourado); border-radius: 999px; margin: 0 auto 16px; opacity: 0.6; }
-  .sheet h3 {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700;
-    color: var(--vinho); margin-bottom: 4px; text-transform: capitalize;
-  }
-  .sheet .sheet-hint { font-size: 0.85rem; opacity: 0.7; margin-bottom: 18px; }
+.orb{
+  --s:96px;width:var(--s);height:var(--s);border-radius:50%;position:relative;flex-shrink:0;
+  background:radial-gradient(circle at 34% 30%,#E0A032,#C15E36 60%,#9c4a28 100%);
+  box-shadow:0 8px 26px rgba(193,94,54,.4),inset 0 2px 8px rgba(255,255,255,.28);
+  display:grid;place-items:center;color:#fff;transition:transform .3s;
+  animation:breathe 4.5s ease-in-out infinite;
+}
+.orb svg{width:34px;height:34px}
+.orb:active{transform:scale(.94)}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+.orb.listening{animation:none}
+.orb.listening::before,.orb.listening::after{content:"";position:absolute;inset:0;border-radius:50%;
+  border:2px solid var(--terra);animation:ripple 1.6s ease-out infinite}
+.orb.listening::after{animation-delay:.8s}
+@keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.9);opacity:0}}
+.orb.speaking{animation:talkpulse .7s ease-in-out infinite}
+@keyframes talkpulse{
+  0%,100%{transform:scale(1);box-shadow:0 8px 26px rgba(193,94,54,.4),inset 0 2px 8px rgba(255,255,255,.28)}
+  50%{transform:scale(1.07);box-shadow:0 12px 50px rgba(224,160,50,.75),inset 0 2px 10px rgba(255,255,255,.32)}}
+.orb.speaking::before,.orb.speaking::after{content:"";position:absolute;inset:0;border-radius:50%;
+  border:2.5px solid #E0A032;animation:sonar 1.4s ease-out infinite}
+.orb.speaking::after{animation-delay:.7s}
+@keyframes sonar{0%{transform:scale(1);opacity:.65}100%{transform:scale(2);opacity:0}}
+.orb.thinking{animation:breathe 1.6s ease-in-out infinite;opacity:.85}
 
-  .type-pick { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 18px; }
-  .type-btn {
-    padding: 14px 6px; border-radius: 12px; border: 1.5px solid var(--vinho);
-    background: var(--creme); cursor: pointer; text-align: center;
-    font-weight: 600; font-size: 0.82rem; color: var(--vinho); transition: all .15s ease;
-  }
-  .type-btn.sel { background: var(--vinho); color: var(--creme); }
-  .type-btn small { display: block; font-size: 0.66rem; opacity: 0.7; font-weight: 500; margin-top: 2px; }
-  .type-btn.sel small { opacity: 0.85; }
+.dock-row{display:flex;align-items:center;gap:10px;margin-top:11px}
+.textin{flex:1;background:var(--bark-3);border:1px solid var(--line);border-radius:15px;
+  padding:12px 15px;color:var(--sand);font-family:inherit;font-size:16px;resize:none;max-height:96px}
+.textin::placeholder{color:var(--oat)}
+.textin:focus{outline:none;border-color:var(--line-2)}
+.send{width:46px;height:46px;border-radius:14px;background:var(--moss);color:#fff;display:grid;place-items:center;flex-shrink:0;transition:.2s}
+.send:hover{background:#6f7d42}.send:disabled{opacity:.4;cursor:default}
 
-  .opt-list { margin-bottom: 16px; }
-  .opt {
-    padding: 13px 16px; border-radius: 11px; border: 1.5px solid rgba(201,150,58,0.4);
-    background: var(--creme); margin-bottom: 7px; cursor: pointer; font-weight: 500; font-size: 0.94rem;
-    display: flex; align-items: center; justify-content: space-between; transition: all .15s ease;
-  }
-  .opt:hover { border-color: var(--dourado); }
-  .opt.sel { background: var(--vinho); color: var(--creme); border-color: var(--vinho); }
-  .opt .opt-time { font-size: 0.72rem; opacity: 0.7; }
-  .opt-empty { font-size: 0.85rem; opacity: 0.6; font-style: italic; padding: 8px 2px; }
+/* ---------- Overlays ---------- */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(20,16,13,.72);backdrop-filter:blur(6px);
+  display:grid;place-items:center;padding:24px;animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card{background:var(--bark-2);border:1px solid var(--line-2);border-radius:24px;padding:28px 26px;max-width:420px;width:100%;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.card h2{font-size:25px;margin-bottom:6px}
+.card p.sub{color:var(--oat);font-size:14px;line-height:1.5;margin-bottom:20px}
+.opt{display:block;width:100%;text-align:left;background:var(--bark-3);border:1px solid var(--line);
+  border-radius:15px;padding:14px 16px;margin-bottom:10px;color:var(--sand);transition:.2s}
+.opt:hover{border-color:var(--terra);background:#DED0B2}
+.opt b{font-family:'Fraunces',serif;font-weight:600;font-size:16px;display:block}
+.opt small{color:var(--oat);font-size:12.5px}
 
-  .custom-in {
-    width: 100%; font-family: 'Jost', sans-serif; font-size: 0.95rem;
-    border: 1.5px solid var(--vinho); border-radius: 11px; padding: 12px 14px;
-    background: var(--creme); color: var(--texto); margin-bottom: 16px;
-  }
-  .custom-in:focus { outline: none; border-color: var(--dourado); }
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}
+.set-row:last-of-type{border-bottom:none}
+.set-row label{font-size:14px}
+.set-row .desc{font-size:11.5px;color:var(--oat);margin-top:2px}
+select,input[type=range]{font-family:inherit;color:var(--sand);accent-color:var(--terra)}
+select{background:var(--bark-3);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.btn{background:var(--terra);color:#fff;border-radius:14px;padding:12px;width:100%;font-size:15px;font-weight:600;margin-top:8px;transition:.2s}
+.btn:hover{background:#d3733f}
+.btn.ghost{background:transparent;border:1px solid var(--line-2);color:var(--oat)}
+.btn.ghost:hover{color:var(--sand)}
+.close-x{position:absolute;top:16px;right:18px;font-size:22px;color:var(--oat)}
 
-  .sheet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* level-up toast */
+.toast{position:fixed;left:50%;top:74px;transform:translateX(-50%);z-index:200;
+  background:var(--bark-2);border:1px solid var(--ochre);border-radius:16px;padding:13px 20px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:pop .5s cubic-bezier(.2,1.2,.4,1)}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-14px)}to{opacity:1;transform:translate(-50%,0)}}
+.toast .em{font-size:26px}.toast b{font-family:'Fraunces',serif;font-size:15px}.toast small{color:var(--oat);font-size:12px}
 
-  .clear-link {
-    text-align: center; font-size: 0.8rem; color: var(--vinho); opacity: 0.6;
-    margin-top: 10px; cursor: pointer; text-decoration: underline;
-  }
+.err{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:200;background:#A9502B;
+  border:1px solid #8a3f20;color:#fff;border-radius:12px;padding:10px 16px;font-size:13px;
+  max-width:calc(100% - 32px);text-align:center;animation:pop .4s}
 
-  /* ---------- BOTTOM NAV ---------- */
-  .nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--vinho); border-top: 2px solid var(--dourado);
-    display: flex; justify-content: space-around; align-items: center;
-    padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 80;
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-    background: none; border: none; cursor: pointer; padding: 6px 2px;
-    color: rgba(245,236,215,0.55); transition: color .2s ease;
-  }
-  .nav-item.active { color: var(--dourado-claro); }
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item span { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.02em; }
-
-  .empty-state {
-    text-align: center; padding: 40px 20px; opacity: 0.6;
-  }
-  .empty-state .es-ic { color: var(--dourado); margin-bottom: 10px; }
-  .empty-state p { font-size: 0.92rem; }
-
-  /* toast */
-  .toast {
-    position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--vinho); color: var(--creme); padding: 11px 22px; border-radius: 999px;
-    font-size: 0.85rem; font-weight: 600; box-shadow: var(--shadow); opacity: 0; pointer-events: none;
-    transition: all .3s ease; z-index: 95; border: 1px solid var(--dourado);
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto}
+}
+@media(max-width:430px){
+  .orb{--s:86px}
+  .card h2{font-size:22px}
+  .top{padding:12px 16px 8px}
+  .brand .name{font-size:20px}
+  .levelrow{padding:0 16px 8px}
+  .themebar{padding:2px 16px 6px}
+  .stream{padding:10px 16px 6px;gap:14px}
+  .dock{padding:8px 16px calc(12px + env(safe-area-inset-bottom))}
+  .msg{max-width:92%}
+  .bubble{font-size:15px}
+  .orb-wrap{gap:7px}
+}
+@media(max-height:680px){
+  .orb{--s:76px}
+  .brand .tag{display:none}
+}
 </style>
 </head>
 <body>
-
 <div class="app">
-  <div class="topbar">
-    <div class="brand">Semana Resolvida<small>Planejador</small></div>
-    <div class="today-chip" id="todayChip">hoje</div>
+  <header class="top">
+    <div class="brand">
+      <span class="name">Charla</span>
+      <span class="tag">seu professor de espanhol por voz</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="chip streak" id="streakChip" title="dias seguidos praticando">🔥 <span id="streakN">0</span></div>
+    <button class="icon-btn" id="setBtn" aria-label="Ajustes">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <div class="levelrow">
+    <span class="level-badge" id="levelBadge">A1 · Principiante</span>
+    <div class="xpbar"><div class="xpfill" id="xpFill"></div></div>
+    <span class="xp-num" id="xpNum">0 / 100</span>
   </div>
 
-  <!-- ===================== INÍCIO ===================== -->
-  <section class="screen active" id="s-inicio">
-    <div class="card wine">
-      <div class="c-label">Sua semana</div>
-      <div class="c-big" id="weekSummary">0 de 7 dias planejados</div>
-      <div class="pbar"><i id="weekBar" style="width:0%"></i></div>
+  <div class="themebar">
+    <button class="theme-chip" id="themeChip">📚 Lição de hoje: <b id="themeName">saludos</b></button>
+  </div>
+
+  <main class="stream" id="stream"></main>
+
+  <div class="dock">
+    <div class="orb-wrap">
+      <div class="lang-seg" id="langSeg" role="group" aria-label="Idioma que você vai falar">
+        <button type="button" data-l="es" class="active">Espanhol</button>
+        <button type="button" data-l="pt">Português</button>
+      </div>
+      <div class="orb-status" id="orbStatus">Toque no orbe e fale em espanhol</div>
+      <button class="orb" id="orb" aria-label="Falar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </button>
     </div>
-
-    <div class="card">
-      <div class="c-label">Hoje você faz</div>
-      <div class="c-big" id="homeTodayMeal">Nada planejado ainda</div>
-      <div class="c-muted" id="homeTodayType"></div>
+    <div class="dock-row">
+      <textarea class="textin" id="textin" rows="1" placeholder="…ou escreva aqui (espanhol ou português)"></textarea>
+      <button class="send" id="send" aria-label="Enviar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
     </div>
-
-    <div class="row-2" style="margin-top:4px">
-      <button class="btn btn-primary" onclick="go('semana')">Planejar semana</button>
-      <button class="btn btn-gold" onclick="go('compras')">Ver compras</button>
-    </div>
-  </section>
-
-  <!-- ===================== SEMANA ===================== -->
-  <section class="screen" id="s-semana">
-    <h1 class="screen-title">Planejar a <em>semana</em></h1>
-    <p class="screen-sub">Toque num dia e siga a Regra do 3-2-1.</p>
-
-    <div class="counters">
-      <div class="counter" id="cnt-nova"><div class="cn">0/3</div><div class="cl">novas</div></div>
-      <div class="counter" id="cnt-rep"><div class="cn">0/2</div><div class="cl">repetidas</div></div>
-      <div class="counter" id="cnt-frz"><div class="cn">0/1</div><div class="cl">freezer</div></div>
-    </div>
-
-    <div id="dayList"></div>
-    <div class="clear-link" onclick="clearWeek()">Limpar semana</div>
-  </section>
-
-  <!-- ===================== COMPRAS ===================== -->
-  <section class="screen" id="s-compras">
-    <h1 class="screen-title">Lista de <em>compras</em></h1>
-    <p class="screen-sub">Gerada do seu cardápio. Marque o que já tem em casa.</p>
-    <div id="shopList"></div>
-  </section>
-
-  <!-- ===================== FREEZER ===================== -->
-  <section class="screen" id="s-freezer">
-    <h1 class="screen-title">Meu <em>freezer</em></h1>
-    <p class="screen-sub">Registre o que guardou. Aviso quando passar de 7 dias.</p>
-    <div class="frz-add">
-      <input type="text" id="frzInput" placeholder="Ex: Frango temperado" maxlength="40">
-      <button class="btn btn-primary btn-sm" onclick="addFreezer()">Guardar</button>
-    </div>
-    <div id="frzList"></div>
-  </section>
-
-  <!-- ===================== HOJE ===================== -->
-  <section class="screen" id="s-hoje">
-    <h1 class="screen-title">O cardápio de <em>hoje</em></h1>
-    <p class="screen-sub">Sem improviso. Só seguir o plano.</p>
-    <div class="hoje-hero" id="hojeHero">
-      <div class="hoje-day" id="hojeDay">—</div>
-      <div class="hoje-meal" id="hojeMeal">Nada planejado</div>
-      <div class="hoje-type" id="hojeType"></div>
-      <button class="btn btn-gold" onclick="markDone()">Marcar como feito ✓</button>
-      <div class="hoje-done-badge">Feito! Boa leveza ✦</div>
-    </div>
-    <div id="hojeRecipe"></div>
-  </section>
-</div>
-
-<!-- ===================== BOTTOM SHEET ===================== -->
-<div class="sheet-bg" id="sheetBg">
-  <div class="sheet" id="sheet">
-    <div class="sheet-grip"></div>
-    <h3 id="sheetDay">Segunda</h3>
-    <p class="sheet-hint">O que vai ter nesse dia?</p>
-
-    <div class="type-pick">
-      <div class="type-btn" data-type="nova" onclick="pickType('nova')">Nova<small>receita</small></div>
-      <div class="type-btn" data-type="rep" onclick="pickType('rep')">Repetir<small>algo da semana</small></div>
-      <div class="type-btn" data-type="frz" onclick="pickType('frz')">Freezer<small>coringa</small></div>
-    </div>
-
-    <div id="optArea"></div>
-
-    <div class="sheet-actions">
-      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveDay()">Salvar dia</button>
-    </div>
-    <div class="clear-link" onclick="removeDay()">Deixar esse dia livre</div>
   </div>
 </div>
-
-<!-- ===================== NAV ===================== -->
-<nav class="nav">
-  <button class="nav-item active" data-screen="inicio" onclick="go('inicio')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
-    <span>Início</span>
-  </button>
-  <button class="nav-item" data-screen="semana" onclick="go('semana')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-    <span>Semana</span>
-  </button>
-  <button class="nav-item" data-screen="compras" onclick="go('compras')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 13h11l2-9H6"/></svg>
-    <span>Compras</span>
-  </button>
-  <button class="nav-item" data-screen="freezer" onclick="go('freezer')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
-    <span>Freezer</span>
-  </button>
-  <button class="nav-item" data-screen="hoje" onclick="go('hoje')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
-    <span>Hoje</span>
-  </button>
-</nav>
-
-<div class="toast" id="toast"></div>
 
 <script>
-/* ============ SALVAMENTO (localStorage com fallback em memória) ============ */
-const Store = (() => {
-  let mem = {}, ok = true;
-  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }
-  catch(e){ ok = false; }
-  return {
-    get(k){ try { return ok ? localStorage.getItem(k) : (k in mem ? mem[k] : null); } catch(e){ return k in mem ? mem[k] : null; } },
-    set(k,v){ try { ok ? localStorage.setItem(k,v) : (mem[k]=v); } catch(e){ mem[k]=v; } }
+/* ============================================================
+   Charla — tutor de espanhol por voz
+   Estado, voz, API do professor e progressão de nível
+   ============================================================ */
+
+/* IA gratuita via Puter.js — roda no navegador, sem chave de API.
+   Na primeira conversa, o Puter pede um login gratuito (popup). */
+const MODEL = 'claude-haiku-4-5'; // rápido e econômico; troque por 'claude-sonnet-5' para respostas mais ricas
+
+const LEVELS = [
+  {code:'A1', name:'Principiante', min:0,   next:100},
+  {code:'A2', name:'Básico',       min:100, next:300},
+  {code:'B1', name:'Intermediário',min:300, next:700},
+  {code:'B2', name:'Intermediário alto', min:700, next:1500},
+  {code:'C1', name:'Avançado',     min:1500,next:9999},
+];
+const THEMES = [
+  {es:'saludos y presentaciones', pt:'cumprimentos e apresentações'},
+  {es:'la familia',               pt:'a família'},
+  {es:'en el restaurante',        pt:'no restaurante'},
+  {es:'de compras',               pt:'fazendo compras'},
+  {es:'viajar y direcciones',     pt:'viagem e direções'},
+  {es:'el trabajo',               pt:'o trabalho'},
+  {es:'el tiempo libre',          pt:'tempo livre'},
+  {es:'la casa',                  pt:'a casa'},
+  {es:'la salud',                 pt:'a saúde'},
+  {es:'planes para el futuro',    pt:'planos para o futuro'},
+];
+const GREETINGS = {
+  A1:{es:'¡Hola! Soy Lucía, tu profe. ¿Cómo te llamas?', pt:'Oi! Sou a Lucía, sua professora. Como você se chama?'},
+  A2:{es:'¡Hola! Soy Lucía. ¿Qué tal tu día hoy?', pt:'Oi! Sou a Lucía. Como foi seu dia hoje?'},
+  B1:{es:'¡Hola! Soy Lucía, encantada. Cuéntame, ¿qué te trae por aquí?', pt:'Oi! Sou a Lucía, prazer. Me conta, o que te traz por aqui?'},
+  B2:{es:'¡Hola! Soy Lucía. ¿De qué te apetece charlar hoy?', pt:'Oi! Sou a Lucía. Sobre o que você quer conversar hoje?'},
+  C1:{es:'¡Hola! Soy Lucía. ¿Qué tema quieres explorar en la charla de hoy?', pt:''},
+};
+
+let state = {
+  level:'A1', xp:0, streak:0, lastPractice:null, daysPracticed:0, totalTurns:0,
+  settings:{ rate:0.92, accent:'es-ES', speakLang:'es' }
+};
+let history = [];        // {role, content} para a API
+let onboarded = false;
+let busy = false;
+let inputLang = 'es';    // idioma da fala do aluno (es | pt)
+
+/* ---------- Persistência (localStorage — funciona no site publicado) ---------- */
+async function load(){
+  try{
+    const raw = localStorage.getItem('charla:profile');
+    if(raw){ state = {...state, ...JSON.parse(raw)}; onboarded = true; }
+  }catch(e){ /* primeira vez, sem perfil */ }
+}
+async function save(){
+  try{ localStorage.setItem('charla:profile', JSON.stringify(state)); }
+  catch(e){ console.warn('save falhou', e); }
+}
+
+/* ---------- Helpers de nível ---------- */
+function levelObj(code){ return LEVELS.find(l=>l.code===code) || LEVELS[0]; }
+function refreshLevelUI(){
+  const lv = levelObj(state.level);
+  document.getElementById('levelBadge').textContent = `${lv.code} · ${lv.name}`;
+  const gained = state.xp - lv.min;
+  const span = lv.next - lv.min;
+  const pct = lv.code==='C1' ? 100 : Math.min(100, Math.round(gained/span*100));
+  document.getElementById('xpFill').style.width = pct+'%';
+  document.getElementById('xpNum').textContent = lv.code==='C1' ? `${state.xp} XP` : `${gained} / ${span}`;
+  document.getElementById('streakN').textContent = state.streak;
+}
+function addXP(n){
+  n = Math.max(3, Math.min(25, n|0));
+  state.xp += n;
+  const idx = LEVELS.findIndex(l=>l.code===state.level);
+  if(idx < LEVELS.length-1 && state.xp >= LEVELS[idx+1].min){
+    state.level = LEVELS[idx+1].code;
+    levelUpToast(LEVELS[idx+1]);
+  }
+  refreshLevelUI(); save();
+}
+function levelUpToast(lv){
+  const t = document.createElement('div');
+  t.className='toast';
+  t.innerHTML = `<span class="em">🎉</span><div><b>Novo nível: ${lv.code}</b><br><small>Agora você é ${lv.name.toLowerCase()}. ¡Sigue así!</small></div>`;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition='.4s'; t.style.opacity='0'; setTimeout(()=>t.remove(),400); }, 4200);
+}
+
+/* ---------- Rotina / streak ---------- */
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function markPractice(){
+  const today = todayStr();
+  if(state.lastPractice === today) return;
+  const y = new Date(Date.now()-864e5).toISOString().slice(0,10);
+  state.streak = (state.lastPractice === y) ? state.streak+1 : 1;
+  state.lastPractice = today;
+  state.daysPracticed++;
+  refreshLevelUI(); save();
+}
+
+/* ---------- Tema do dia ---------- */
+function themeOfDay(){
+  const doy = Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5);
+  return THEMES[doy % THEMES.length];
+}
+
+/* ---------- Voz: síntese ---------- */
+let voices = [];
+function loadVoices(){ voices = speechSynthesis.getVoices(); }
+if('speechSynthesis' in window){
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+function voiceFor(lang){
+  return voices.find(v=>v.lang===lang)
+      || voices.find(v=>v.lang && v.lang.slice(0,2)===lang.slice(0,2))
+      || null;
+}
+/* fala uma sequência de trechos, cada um no seu idioma/voz */
+function speakSeq(parts, orbFx=true){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const items = (parts||[]).filter(p=>p && p.text);
+  if(!items.length) return;
+  if(orbFx) setOrb('speaking');
+  items.forEach((p,i)=>{
+    const u = new SpeechSynthesisUtterance(p.text);
+    const v = voiceFor(p.lang); if(v) u.voice = v;
+    u.lang = p.lang; u.rate = state.settings.rate; u.pitch = 1.02;
+    if(orbFx && i===items.length-1){
+      u.onend   = ()=>{ if(!listening) setOrb('idle'); };
+      u.onerror = ()=> setOrb('idle');
+    }
+    speechSynthesis.speak(u);
+  });
+}
+/* atalho: fala só em espanhol */
+function speak(text, orbFx=true){ speakSeq([{text, lang:state.settings.accent}], orbFx); }
+/* monta a fala da Lucía: apoio em PT (se houver) e depois a prática em ES */
+function tutorParts(d){
+  const arr=[];
+  if(d.reply_pt) arr.push({text:d.reply_pt, lang:'pt-BR'});
+  if(d.reply_es) arr.push({text:d.reply_es, lang:state.settings.accent});
+  return arr;
+}
+
+/* ---------- Voz: reconhecimento ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null, listening = false;
+function recogLang(){ return inputLang==='pt' ? 'pt-BR' : state.settings.accent; }
+function initRecog(){
+  if(!SR) return null;
+  const r = new SR();
+  r.lang = recogLang();
+  r.interimResults = false;
+  r.maxAlternatives = 1;
+  r.onresult = e=>{
+    const text = e.results[0][0].transcript.trim();
+    if(text){ document.getElementById('textin').value = text; sendTurn(text); }
   };
-})();
-
-/* ============ DADOS ============ */
-const RECIPES = [
-  { id:'frango-limao', name:'Frango ao limão', time:'20 min',
-    ing:[['frango','Proteínas'],['limão','Legumes & Frutas'],['alho','Temperos & Coringas'],['azeite','Temperos & Coringas']],
-    steps:['Tempere o frango com sal, alho amassado e o suco de meio limão.','Esquente o azeite numa frigideira em fogo médio-alto.','Doure os filés por 4 a 5 minutos de cada lado.','Finalize com mais um fio de limão e sirva com arroz ou pão.'] },
-  { id:'macarrao',     name:'Macarrão rápido', time:'25 min',
-    ing:[['macarrão','Grãos'],['molho de tomate','Temperos & Coringas'],['atum','Proteínas']],
-    steps:['Cozinhe o macarrão em água com sal até ficar al dente.','Numa panela, aqueça o molho de tomate com o atum escorrido.','Escorra o macarrão e misture ao molho.','Sirva em seguida, com queijo ralado por cima se quiser.'] },
-  { id:'omelete',      name:'Omelete de forno', time:'15 min',
-    ing:[['ovos','Proteínas'],['legumes picados','Legumes & Frutas'],['queijo','Laticínios']],
-    steps:['Bata 4 ovos com uma pitada de sal.','Misture os legumes picados e o queijo.','Despeje numa forma untada ou refratário.','Asse por 15 minutos a 200°C, até firmar e dourar.'] },
-  { id:'carne-leg',    name:'Carne com legumes', time:'30 min',
-    ing:[['carne moída','Proteínas'],['legumes','Legumes & Frutas'],['batata','Legumes & Frutas']],
-    steps:['Refogue a carne moída até dourar bem.','Junte os legumes e a batata em cubos pequenos.','Tempere a gosto e acrescente um pouco de água.','Cozinhe até a batata amaciar. Sirva com arroz ou na tortilla.'] },
-  { id:'sopa-feijao',  name:'Sopa de feijão', time:'20 min',
-    ing:[['feijão','Grãos'],['linguiça','Proteínas'],['couve','Legumes & Frutas']],
-    steps:['Refogue a linguiça em rodelas até dourar.','Junte o feijão cozido com um pouco do caldo e água.','Deixe ferver por alguns minutos.','Acrescente a couve picada e sirva quente.'] },
-  { id:'peixe',        name:'Peixe na frigideira', time:'15 min',
-    ing:[['tilápia','Proteínas'],['limão','Legumes & Frutas'],['pimenta','Temperos & Coringas']],
-    steps:['Tempere os filés com sal, pimenta e suco de limão.','Esquente um fio de azeite na frigideira.','Frite por 3 a 4 minutos de cada lado.','Sirva com salada ou arroz.'] },
-  { id:'tapioca',      name:'Tapioca recheada', time:'10 min',
-    ing:[['tapioca','Grãos'],['queijo','Laticínios'],['presunto','Proteínas']],
-    steps:['Espalhe a goma de tapioca na frigideira quente.','Quando firmar, coloque o queijo e o presunto por cima.','Dobre ao meio e deixe o queijo derreter.','Sirva quente, com fruta cortada do lado.'] },
-  { id:'arroz-forno',  name:'Arroz de forno', time:'20 min',
-    ing:[['arroz','Grãos'],['ovos','Proteínas'],['queijo','Laticínios']],
-    steps:['Misture o arroz já cozido com ovos batidos e queijo.','Junte sobras que tiver na geladeira (frango, legumes).','Coloque numa forma untada e cubra com mais queijo.','Asse por 20 minutos a 200°C, até dourar.'] },
-];
-const RMAP = Object.fromEntries(RECIPES.map(r => [r.id, r]));
-
-const DAYS = [
-  { key:'seg', label:'Segunda', short:'Seg' },
-  { key:'ter', label:'Terça', short:'Ter' },
-  { key:'qua', label:'Quarta', short:'Qua' },
-  { key:'qui', label:'Quinta', short:'Qui' },
-  { key:'sex', label:'Sexta', short:'Sex' },
-  { key:'sab', label:'Sábado', short:'Sáb' },
-  { key:'dom', label:'Domingo', short:'Dom' },
-];
-const CATS = ['Proteínas','Grãos','Legumes & Frutas','Laticínios','Temperos & Coringas'];
-// JS getDay(): 0=Dom..6=Sáb  →  índice no DAYS array
-const JS_TO_DAY = { 0:'dom', 1:'seg', 2:'ter', 3:'qua', 4:'qui', 5:'sex', 6:'sab' };
-
-/* ============ ESTADO ============ */
-let state = load();
-function load(){
-  try { return JSON.parse(Store.get('sr_state')) || blank(); }
-  catch(e){ return blank(); }
+  r.onerror = e=>{
+    listening=false; setOrb('idle');
+    if(e.error==='not-allowed') showErr('Permita o acesso ao microfone para falar.');
+    else if(e.error==='no-speech') setStatus('Não te ouvi. Toque e fale de novo.');
+  };
+  r.onend = ()=>{ listening=false; if(!busy) setOrb('idle'); };
+  return r;
 }
-function blank(){
-  const week = {};
-  DAYS.forEach(d => week[d.key] = null); // null | { type:'nova'|'rep'|'frz', meal:'...', recipeId? }
-  return { week, have:{}, freezer:[], doneToday:null };
-}
-function save(){ Store.set('sr_state', JSON.stringify(state)); }
-
-/* ============ NAVEGAÇÃO ============ */
-function go(screen){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('s-'+screen).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.screen===screen));
-  window.scrollTo(0,0);
-  if(screen==='inicio') renderHome();
-  if(screen==='semana') renderWeek();
-  if(screen==='compras') renderShop();
-  if(screen==='freezer') renderFreezer();
-  if(screen==='hoje') renderHoje();
+function toggleListen(){
+  if(busy) return;
+  if(!SR){ showErr('Seu navegador não reconhece voz. Use o campo de texto — funciona igual.'); return; }
+  if(listening){ recog && recog.stop(); return; }
+  speechSynthesis.cancel();
+  recog = initRecog();
+  try{ recog.lang = recogLang(); recog.start(); listening=true; setOrb('listening'); }
+  catch(e){ listening=false; setOrb('idle'); }
 }
 
-/* ============ INÍCIO ============ */
-function renderHome(){
-  const planned = DAYS.filter(d => state.week[d.key]).length;
-  document.getElementById('weekSummary').textContent = `${planned} de 7 dias planejados`;
-  document.getElementById('weekBar').style.width = (planned/7*100) + '%';
+/* ---------- Orbe ---------- */
+const orb = document.getElementById('orb');
+function setOrb(mode){
+  orb.className = 'orb' + (mode==='idle'?'':' '+mode);
+  const idleTxt = inputLang==='pt' ? 'Toque no orbe e fale em português' : 'Toque no orbe e fale em espanhol';
+  const map = {
+    idle:idleTxt,
+    listening:'<b>Ouvindo…</b> fale agora',
+    thinking:'Lucía está pensando…',
+    speaking:'<b>Lucía</b> está falando…'
+  };
+  setStatus(map[mode] || map.idle);
+}
+function setStatus(html){ document.getElementById('orbStatus').innerHTML = html; }
 
-  const tk = JS_TO_DAY[new Date().getDay()];
-  const t = state.week[tk];
-  document.getElementById('homeTodayMeal').textContent = t ? t.meal : 'Nada planejado ainda';
-  document.getElementById('homeTodayType').textContent = t ? typeLabel(t.type) : 'Toque em “Planejar semana” para começar';
-}
+/* ---------- Render de mensagens ---------- */
+const stream = document.getElementById('stream');
+function scrollDown(){ stream.scrollTop = stream.scrollHeight; }
 
-/* ============ SEMANA ============ */
-function renderWeek(){
-  const list = document.getElementById('dayList');
-  list.innerHTML = '';
-  DAYS.forEach(d => {
-    const m = state.week[d.key];
-    const div = document.createElement('div');
-    div.className = 'day';
-    div.onclick = () => openSheet(d.key);
-    let tag = '';
-    if(m){
-      const cls = m.type==='nova'?'tag-nova':m.type==='rep'?'tag-rep':'tag-frz';
-      tag = `<span class="dtag ${cls}">${typeShort(m.type)}</span>`;
-    }
-    div.innerHTML = `
-      <div class="dname">${d.short}</div>
-      <div class="dmeal ${m?'':'empty'}">${m ? m.meal : 'livre'}</div>
-      ${tag}
-      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
-    list.appendChild(div);
-  });
-  updateCounters();
-}
-function updateCounters(){
-  let n=0,r=0,f=0;
-  DAYS.forEach(d => { const m=state.week[d.key]; if(!m) return; if(m.type==='nova')n++; else if(m.type==='rep')r++; else f++; });
-  setCounter('cnt-nova', n, 3);
-  setCounter('cnt-rep', r, 2);
-  setCounter('cnt-frz', f, 1);
-}
-function setCounter(id, val, max){
-  const el = document.getElementById(id);
-  el.querySelector('.cn').textContent = `${val}/${max}`;
-  el.classList.toggle('over', val>max);
+function addUser(text){
+  const el = document.createElement('div');
+  el.className='msg user';
+  el.innerHTML = `<div class="bubble"></div>`;
+  el.querySelector('.bubble').textContent = text;
+  stream.appendChild(el); scrollDown();
 }
 
-/* ============ BOTTOM SHEET ============ */
-let sheetDay = null, draft = null;
-function openSheet(dayKey){
-  sheetDay = dayKey;
-  const d = DAYS.find(x=>x.key===dayKey);
-  const existing = state.week[dayKey];
-  draft = existing ? {...existing} : { type:null, meal:'', recipeId:null };
-  document.getElementById('sheetDay').textContent = d.label;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('sel', b.dataset.type===draft.type));
-  renderOptArea();
-  document.getElementById('sheetBg').classList.add('show');
+function typingBubble(){
+  const el = document.createElement('div');
+  el.className='msg tutor';
+  el.innerHTML = `<div class="avatar">L</div><div class="body"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  stream.appendChild(el); scrollDown();
+  return el;
 }
-function closeSheet(){ document.getElementById('sheetBg').classList.remove('show'); }
-document.getElementById('sheetBg').addEventListener('click', e => { if(e.target.id==='sheetBg') closeSheet(); });
 
-function pickType(t){
-  draft.type = t; draft.meal = ''; draft.recipeId = null;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('sel', b.dataset.type===t));
-  renderOptArea();
-}
-function renderOptArea(){
-  const area = document.getElementById('optArea');
-  if(!draft.type){ area.innerHTML = ''; return; }
+function addTutor(data){
+  const el = document.createElement('div');
+  el.className='msg tutor';
+  const es = data.reply_es || '';
+  const ptSay = data.reply_pt || '';
+  const trans = data.translation || data.reply_pt_hint || '';
+  const corr = data.correction || '';
+  const words = Array.isArray(data.new_words)? data.new_words.filter(w=>w&&w.es):[];
 
-  if(draft.type==='nova'){
-    let html = '<div class="opt-list">';
-    RECIPES.forEach(r => {
-      const sel = draft.recipeId===r.id ? 'sel' : '';
-      html += `<div class="opt ${sel}" onclick="pickRecipe('${r.id}')"><span>${r.name}</span><span class="opt-time">${r.time}</span></div>`;
-    });
-    html += '</div>';
-    html += `<input class="custom-in" id="customMeal" placeholder="…ou escreva outra receita" value="${draft.recipeId?'':escapeHtml(draft.meal)}" oninput="customType()">`;
-    area.innerHTML = html;
+  let wordsHtml='';
+  if(words.length){
+    wordsHtml = `<div class="words">`+words.map(w=>`<span class="word"><b>${esc(w.es)}</b> <span>· ${esc(w.pt||'')}</span></span>`).join('')+`</div>`;
   }
-  else if(draft.type==='rep'){
-    // refeições já marcadas como nova na semana
-    const novas = DAYS.map(d=>state.week[d.key]).filter(m => m && m.type==='nova');
-    const uniq = [...new Map(novas.map(m=>[m.meal,m])).values()];
-    let html = '<div class="opt-list">';
-    if(uniq.length===0){
-      html += '<div class="opt-empty">Nenhuma receita nova marcada ainda. Adicione uma receita nova primeiro para poder repetir.</div>';
-    } else {
-      uniq.forEach(m => {
-        const sel = draft.meal===m.meal ? 'sel':'';
-        html += `<div class="opt ${sel}" onclick="pickRepeat('${escapeAttr(m.meal)}')"><span>${m.meal}</span><span class="opt-time">repetir</span></div>`;
-      });
-    }
-    html += '</div>';
-    area.innerHTML = html;
-  }
-  else { // freezer
-    let html = '<div class="opt-list">';
-    if(state.freezer.length===0){
-      html += '<div class="opt-empty">Seu freezer está vazio. Você ainda pode escrever um coringa abaixo.</div>';
-    } else {
-      state.freezer.forEach(f => {
-        const sel = draft.meal===f.name ? 'sel':'';
-        html += `<div class="opt ${sel}" onclick="pickFreezer('${escapeAttr(f.name)}')"><span>${f.name}</span><span class="opt-time">no freezer</span></div>`;
-      });
-    }
-    html += '</div>';
-    html += `<input class="custom-in" id="customMeal" placeholder="…ou escreva um coringa" value="${escapeHtml(draft.meal)}" oninput="customType()">`;
-    area.innerHTML = html;
-  }
-  // show the chosen recipe (ingredients + how-to) right here while choosing
-  const rec = resolveRecipe(draft);
-  if(rec) area.insertAdjacentHTML('beforeend', recipeDetailHTML(rec, true));
-}
-function pickRecipe(id){ draft.recipeId=id; draft.meal=RMAP[id].name; renderOptArea(); }
-function pickRepeat(meal){ draft.meal=meal; draft.recipeId=null; renderOptArea(); }
-function pickFreezer(name){ draft.meal=name; draft.recipeId=null; renderOptArea(); }
-function customType(){ const v=document.getElementById('customMeal').value; draft.meal=v; draft.recipeId=null;
-  document.querySelectorAll('#optArea .opt').forEach(o=>o.classList.remove('sel'));
-  refreshSheetDetail(); }
+  const corrHtml = corr ? `<div class="correction"><span class="lbl">Ajuste</span>${esc(corr)}</div>` : '';
+  const ptHtml   = ptSay ? `<div class="pt-say"><span class="lbl">Português</span>${esc(ptSay)}</div>` : '';
 
-// resolve a meal (by recipeId or by matching name) to a known recipe
-function resolveRecipe(obj){
-  if(!obj) return null;
-  if(obj.recipeId && RMAP[obj.recipeId]) return RMAP[obj.recipeId];
-  const nm = (obj.meal||'').trim().toLowerCase();
-  return RECIPES.find(r => r.name.toLowerCase()===nm) || null;
-}
-function recipeDetailHTML(rec, inSheet){
-  const chips = rec.ing.map(([n]) => `<span class="rd-chip">${n}</span>`).join('');
-  const steps = rec.steps.map(s => `<li>${s}</li>`).join('');
-  return `<div class="recipe-detail${inSheet?' in-sheet':''}">
-    <div class="rd-title">${rec.name} <span class="rd-time">· ${rec.time}</span></div>
-    <div class="rd-label">Ingredientes</div>
-    <div class="rd-chips">${chips}</div>
-    <div class="rd-label">Modo de preparo</div>
-    <ol class="rd-steps">${steps}</ol>
-  </div>`;
-}
-// re-render only the recipe-detail part inside the sheet without rebuilding options
-function refreshSheetDetail(){
-  const area = document.getElementById('optArea');
-  const old = area.querySelector('.recipe-detail');
-  if(old) old.remove();
-  const rec = resolveRecipe(draft);
-  if(rec) area.insertAdjacentHTML('beforeend', recipeDetailHTML(rec, true));
-}
-
-function saveDay(){
-  if(!draft.type || !draft.meal.trim()){ toast('Escolha o tipo e a refeição'); return; }
-  state.week[sheetDay] = { type:draft.type, meal:draft.meal.trim(), recipeId:draft.recipeId };
-  save(); closeSheet(); renderWeek(); toast('Dia salvo ✓');
-}
-function removeDay(){ state.week[sheetDay]=null; save(); closeSheet(); renderWeek(); toast('Dia liberado'); }
-
-function clearWeek(){
-  DAYS.forEach(d => state.week[d.key]=null);
-  save(); renderWeek(); toast('Semana limpa');
-}
-
-/* ============ COMPRAS ============ */
-function renderShop(){
-  const wrap = document.getElementById('shopList');
-  // junta ingredientes de todas as receitas usadas na semana
-  const used = {};
-  DAYS.forEach(d => {
-    const m = state.week[d.key];
-    if(m && m.recipeId && RMAP[m.recipeId]){
-      RMAP[m.recipeId].ing.forEach(([name,cat]) => {
-        if(!used[cat]) used[cat] = new Map();
-        if(!used[cat].has(name)) used[cat].set(name, new Set());
-        used[cat].get(name).add(RMAP[m.recipeId].name);
-      });
-    }
-  });
-
-  const total = Object.values(used).reduce((a,m)=>a+m.size,0);
-  if(total===0){
-    wrap.innerHTML = `<div class="empty-state">
-      <svg class="es-ic" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 13h11l2-9H6"/></svg>
-      <p>Planeje pelo menos uma receita nova na semana<br>para gerar sua lista de compras.</p></div>`;
-    return;
-  }
-
-  let html = '';
-  CATS.forEach(cat => {
-    if(!used[cat]) return;
-    html += `<div class="cat-block"><div class="cat-head"><span class="dot"></span>${cat}</div>`;
-    [...used[cat].keys()].sort().forEach(name => {
-      const froms = [...used[cat].get(name)];
-      const key = cat+'::'+name;
-      const have = state.have[key] ? 'have':'';
-      const fromTxt = froms.length>1 ? froms.length+' receitas' : froms[0];
-      html += `<div class="ing ${have}" onclick="toggleHave('${escapeAttr(key)}')">
-        <div class="box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
-        <span class="iname">${name}</span>
-        <span class="ifrom">${fromTxt}</span>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  wrap.innerHTML = html;
-}
-function toggleHave(key){ state.have[key] = !state.have[key]; save(); renderShop(); }
-
-/* ============ FREEZER ============ */
-function addFreezer(){
-  const inp = document.getElementById('frzInput');
-  const v = inp.value.trim();
-  if(!v){ toast('Escreva o que guardou'); return; }
-  state.freezer.unshift({ id:Date.now(), name:v, date:Date.now() });
-  inp.value=''; save(); renderFreezer(); toast('Guardado no freezer ✓');
-}
-document.getElementById('frzInput').addEventListener('keydown', e => { if(e.key==='Enter') addFreezer(); });
-
-function renderFreezer(){
-  const wrap = document.getElementById('frzList');
-  if(state.freezer.length===0){
-    wrap.innerHTML = `<div class="empty-state">
-      <svg class="es-ic" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
-      <p>Freezer vazio.<br>Adicione o que congelou para não esquecer.</p></div>`;
-    return;
-  }
-  const now = Date.now();
-  let html = '';
-  state.freezer.forEach(f => {
-    const days = Math.floor((now - f.date)/86400000);
-    const old = days>=7 ? 'old':'';
-    const ago = days===0 ? 'hoje' : days===1 ? 'ontem' : `há ${days} dias`;
-    html += `<div class="frz-item ${old}">
-      <svg class="fic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
-      <div>
-        <div class="fname">${f.name}</div>
-        <div class="fdate">${ago}</div>
-        ${old ? '<div class="fwarn">usar logo</div>' : ''}
-      </div>
-      <div class="fdel" onclick="delFreezer(${f.id})">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+  el.innerHTML = `
+    <div class="avatar">L</div>
+    <div class="body">
+      <div class="name">LUCÍA</div>
+      <div class="bubble">${esc(es)}</div>
+      ${ptHtml}
+      ${trans?`<div class="pt-hint" data-pt>${esc(trans)}</div>`:''}
+      ${corrHtml}
+      ${wordsHtml}
+      <div class="acts">
+        <button class="act a-replay">${icoSpeak()} Ouvir de novo</button>
+        ${trans?`<button class="act a-trans">${icoEye()} Ver tradução</button>`:''}
+        <button class="act a-explain">${icoBook()} Explicar</button>
       </div>
     </div>`;
-  });
-  wrap.innerHTML = html;
-}
-function delFreezer(id){ state.freezer = state.freezer.filter(f=>f.id!==id); save(); renderFreezer(); }
+  stream.appendChild(el);
 
-/* ============ HOJE ============ */
-function renderHoje(){
-  const tk = JS_TO_DAY[new Date().getDay()];
-  const d = DAYS.find(x=>x.key===tk);
-  const m = state.week[tk];
-  document.getElementById('hojeDay').textContent = d.label;
-  const mealEl = document.getElementById('hojeMeal');
-  const typeEl = document.getElementById('hojeType');
-  const hero = document.getElementById('hojeHero');
-
-  if(m){
-    mealEl.textContent = m.meal; mealEl.classList.remove('empty');
-    typeEl.textContent = typeLabel(m.type);
-  } else {
-    mealEl.textContent = 'Nada planejado'; mealEl.classList.add('empty');
-    typeEl.textContent = 'Vá em Semana e monte seu cardápio';
+  el.querySelector('.a-replay').onclick = ()=> speakSeq(tutorParts(data));
+  const transBtn = el.querySelector('.a-trans');
+  if(transBtn){
+    transBtn.onclick = ()=>{
+      const h = el.querySelector('[data-pt]'); h.classList.toggle('show');
+      transBtn.innerHTML = h.classList.contains('show') ? icoEye()+' Ocultar tradução' : icoEye()+' Ver tradução';
+    };
   }
-  // done state válido só para hoje
-  const todayStr = new Date().toDateString();
-  hero.classList.toggle('done', state.doneToday===todayStr && !!m);
+  el.querySelector('.a-explain').onclick = ()=> explainTurn(el, es);
 
-  // mostra a receita completa do prato de hoje, se for uma receita conhecida
-  const rec = resolveRecipe(m);
-  document.getElementById('hojeRecipe').innerHTML = rec ? `<div class="card">${recipeDetailHTML(rec, false)}</div>` : '';
-}
-function markDone(){
-  const tk = JS_TO_DAY[new Date().getDay()];
-  if(!state.week[tk]){ toast('Nada planejado para hoje'); return; }
-  state.doneToday = new Date().toDateString();
-  save(); renderHoje(); toast('Que delícia! Feito ✓');
+  scrollDown();
+  speakSeq(tutorParts(data));
 }
 
-/* ============ HELPERS ============ */
-function typeLabel(t){ return t==='nova'?'Receita nova':t==='rep'?'Refeição repetida':'Coringa do freezer'; }
-function typeShort(t){ return t==='nova'?'Nova':t==='rep'?'Repetir':'Freezer'; }
-function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escapeAttr(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
-let toastTimer;
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function icoSpeak(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>';}
+function icoEye(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';}
+function icoBook(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';}
+
+/* ---------- System prompt do professor ---------- */
+function systemPrompt(){
+  const lv = levelObj(state.level);
+  const calib = {
+    A1:'O aluno é INICIANTE TOTAL. Fale MUITO devagar e simples: frases de 3 a 6 palavras. reply_es sempre curtíssimo. reply_pt SEMPRE preenchido com um apoio curto em português. Correções em português.',
+    A2:'Aluno BÁSICO. Frases curtas e comuns. reply_es simples. reply_pt quase sempre preenchido. Correções em português.',
+    B1:'Aluno INTERMEDIÁRIO. Converse com naturalidade em espanhol. reply_pt só quando o aluno demonstrar dúvida ou falar em português. Correções em português, curtas.',
+    B2:'Aluno INTERMEDIÁRIO-ALTO. Espanhol natural, pode usar expressões idiomáticas. reply_pt raro (quase sempre null). Correções em espanhol simples.',
+    C1:'Aluno AVANÇADO. Espanhol 100% natural e rico. reply_pt = null, salvo pedido explícito. Correções em espanhol, focando nuances.'
+  }[lv.code];
+
+  return `Você é Lucía, uma professora de espanhol calorosa, paciente e bilíngue (espanhol e português do Brasil). Seu aluno é brasileiro. Vocês conversam POR VOZ, então suas falas devem soar naturais lidas em voz alta.
+
+NÍVEL ATUAL DO ALUNO: ${lv.code} (${lv.name}).
+${calib}
+
+VOCÊ ENTENDE E FALA OS DOIS IDIOMAS:
+- O aluno pode falar ou escrever em ESPANHOL ou em PORTUGUÊS — entenda perfeitamente qualquer um dos dois.
+- Se ele usar português, entenda com naturalidade, responda em espanhol (reply_es) e dê um apoio em português (reply_pt) para ele não se perder, incentivando-o gentilmente a tentar a próxima fala em espanhol.
+- Se ele já falou em espanhol, mantenha a conversa em espanhol.
+
+CAMPOS DA RESPOSTA:
+- reply_es: sua fala em ESPANHOL (será falada com voz espanhola). Máx. 2 frases. SEMPRE presente.
+- reply_pt: uma fala curta de APOIO em PORTUGUÊS (será falada com voz portuguesa), quando ajudar. null quando não precisar. Não repita a mesma frase em outro idioma — use o português para explicar, acolher ou orientar.
+- translation: tradução literal ao português da sua frase em espanhol (reply_es), para o aluno conferir se quiser. Pode ser null nos níveis altos.
+- correction: SEMPRE que o aluno usar espanhol, verifique erros de acentuação, ortografia, concordância, gênero, conjugação, uso e naturalidade (inclusive espanhol "aportuguesado"). Se houver QUALQUER erro, preencha correction no formato: ❌ o que ele escreveu → ✅ a forma correta — e, entre parênteses, uma nota curtinha do motivo. Ex.: "❌ estas muy tranquilo → ✅ estás muy tranquilo (o verbo estar leva acento em «estás»)". Só use null se a frase estiver perfeita ou se ele falou em português.
+- new_words: 0 a 2 palavras/expressões úteis com tradução ao português. Vazio se não houver nada novo.
+- xp: quanto o aluno se esforçou nesta fala, de 5 (muito curto) a 20 (frase completa e bem construída em espanhol).
+- Termine quase sempre com uma pergunta simples em espanhol para manter a conversa viva.
+
+RESPONDA APENAS com um objeto JSON válido, sem markdown, sem crases, exatamente neste formato:
+{"reply_es":"...","reply_pt":"..." ou null,"translation":"..." ou null,"correction":"..." ou null,"new_words":[{"es":"...","pt":"..."}],"xp":10}`;
 }
 
-/* ============ INIT ============ */
-(function init(){
-  const tk = JS_TO_DAY[new Date().getDay()];
-  document.getElementById('todayChip').textContent = DAYS.find(x=>x.key===tk).label;
-  renderHome();
+/* ---------- Chamada única (IA gratuita via Puter.js) ---------- */
+function puterText(response){
+  if(!response) return '';
+  if(typeof response === 'string') return response;
+  const c = response.message && response.message.content;
+  if(Array.isArray(c)) return c.filter(b=>b && (b.type==='text' || b.text)).map(b=>b.text||'').join('').trim();
+  if(typeof c === 'string') return c.trim();
+  if(typeof response.text === 'string') return response.text.trim();
+  return '';
+}
+async function callClaude(system, messages){
+  if(typeof puter === 'undefined' || !puter.ai || !puter.ai.chat){
+    const err = new Error('Puter.js não carregou'); err.kind='offline'; throw err;
+  }
+  const msgs = system ? [{role:'system', content:system}, ...messages] : messages;
+  let response;
+  try{
+    response = await puter.ai.chat(msgs, { model: MODEL });
+  }catch(e){
+    const err = new Error((e && (e.message || e.error && e.error.message)) || 'Falha na IA'); err.kind='api'; throw err;
+  }
+  const txt = puterText(response);
+  if(!txt){ const err = new Error('Resposta vazia da IA'); err.kind='api'; throw err; }
+  return txt;
+}
+
+/* ---------- Chamada à API do professor ---------- */
+async function callTutor(userText){
+  history.push({role:'user', content:userText});
+  const trimmed = history.slice(-12);
+  try{
+    const raw = await callClaude(systemPrompt(), trimmed);
+    const parsed = safeParse(raw);
+    history.push({role:'assistant', content: parsed.reply_es || raw});
+    return parsed;
+  }catch(e){
+    history.pop(); // remove o user pra permitir novo envio
+    throw e;
+  }
+}
+function safeParse(raw){
+  let t = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if(a>=0 && b>a) t = t.slice(a,b+1);
+  try{ return JSON.parse(t); }
+  catch(e){ return { reply_es: raw || '¿Puedes repetir, por favor?', reply_pt:null, translation:null, correction:null, new_words:[], xp:8 }; }
+}
+
+/* ---------- Explicar ---------- */
+async function explainTurn(el, spanishLine){
+  const existing = el.querySelector('.explain-box');
+  if(existing){ existing.remove(); return; }
+  const box = document.createElement('div');
+  box.className='explain-box';
+  box.innerHTML = `<span class="lbl">Análise gramatical</span><div class="typing"><span></span><span></span><span></span></div>`;
+  el.querySelector('.body').appendChild(box); scrollDown();
+  try{
+    const txt = await callClaude(
+      'Você é uma professora de espanhol que faz análise gramatical para um aluno brasileiro. Explique de forma clara, didática e organizada, sempre em português.',
+      [{role:'user', content:`Faça uma pequena análise gramatical desta frase em espanhol para um aluno de nível ${state.level}: "${spanishLine}".
+
+Estruture assim, curto e direto:
+1) Tradução natural em português.
+2) Análise por partes: destaque os verbos (tempo/modo), concordância de gênero e número, artigos, preposições e qualquer palavra-chave — explicando a função de cada uma.
+3) Uma dica ou regra da gramática espanhola que aparece nessa frase.
+
+Sem markdown, sem asteriscos. Use linhas curtas.`}]
+    );
+    box.innerHTML = `<span class="lbl">Análise gramatical</span>${esc(txt)}`;
+  }catch(e){
+    const msg = (e.kind==='offline' || e.kind==='api')
+      ? 'Não consegui usar a IA. Veja o aviso no chat para resolver.'
+      : 'A análise falhou ('+(e.message||'erro')+'). Toque em "Explicar" de novo.';
+    box.innerHTML = `<span class="lbl">Análise gramatical</span>${esc(msg)}`;
+    if(e.kind==='offline' || e.kind==='api') showApiHelpOnce(e);
+  }
+  scrollDown();
+}
+
+/* ---------- Fluxo de envio ---------- */
+async function sendTurn(text){
+  text = (text||'').trim();
+  if(!text || busy) return;
+  document.getElementById('textin').value='';
+  addUser(text);
+  busy = true; setOrb('thinking');
+  const typing = typingBubble();
+  try{
+    const data = await callTutor(text);
+    typing.remove();
+    addTutor(data);
+    markPractice();
+    addXP(data.xp || 8);
+    state.totalTurns++; save();
+  }catch(e){
+    typing.remove();
+    if(e.kind==='offline' || e.kind==='api'){
+      showErr('Não consegui usar a IA agora.');
+      showApiHelpOnce(e);
+    }else{
+      showErr('A Lucía tropeçou ('+(e.message||'erro')+'). Tente de novo.');
+    }
+  }finally{
+    busy=false; if(!listening) setOrb('idle');
+  }
+}
+
+let apiHelpShown = false;
+/* O Puter.js exige que a página seja servida por http(s) — não funciona
+   quando o arquivo é aberto direto do PC (file://). Avisa isso na cara. */
+function checkRunningFromFile(){
+  if(location.protocol === 'file:'){
+    apiHelpShown = true; // evita duplicar com o aviso genérico de erro de API
+    const el = document.createElement('div');
+    el.className='msg tutor';
+    el.innerHTML = `
+      <div class="avatar">i</div>
+      <div class="body">
+        <div class="name">AVISO</div>
+        <div class="bubble" style="background:rgba(198,107,61,.10);border-color:rgba(198,107,61,.3)">
+          Este arquivo foi aberto direto do computador (endereço começando com <b>file://</b>). O login e a IA do Puter <b>só funcionam quando o site está publicado</b> (http/https) — abrir com dois cliques não é suficiente.<br><br>
+          Formas rápidas de testar:<br>
+          1) Publique o <b>charla.html</b> no Cloudflare Pages (Upload assets) — é grátis e leva 1 minuto.<br>
+          2) Ou, se tiver o VS Code, use a extensão <b>Live Server</b> e abra por ela.<br><br>
+          Depois de publicado/servido, o login do Puter deve funcionar normalmente.
+        </div>
+      </div>`;
+    stream.appendChild(el); scrollDown();
+  }
+}
+function showApiHelpOnce(e){
+  if(apiHelpShown) return; apiHelpShown = true;
+  const extra = (e && e.message && e.kind==='api') ? `<br><br><b>Detalhe:</b> ${esc(e.message)}` : '';
+  const el = document.createElement('div');
+  el.className='msg tutor';
+  el.innerHTML = `
+    <div class="avatar">i</div>
+    <div class="body">
+      <div class="name">AVISO</div>
+      <div class="bubble" style="background:rgba(198,107,61,.10);border-color:rgba(198,107,61,.3)">
+        Não consegui usar a IA. A Charla usa o <b>Puter</b> (gratuito) para conversar. Causas mais comuns:<br><br>
+        1) O <b>popup de login do Puter</b> foi bloqueado pelo navegador — procure o ícone de popup bloqueado na barra de endereço e libere, depois toque no orbe de novo.<br>
+        2) <b>Cookies de terceiros</b> estão desativados — nas configurações de privacidade do navegador, permita cookies de terceiros para este site (ou desative modo anônimo/privado).<br>
+        3) Uma extensão de <b>bloqueio de anúncios/rastreadores</b> (AdBlock, uBlock, etc.) pode estar barrando o domínio js.puter.com — tente desativar para este site.<br>
+        4) O site precisa estar em <b>http/https</b> publicado — não funciona abrindo o arquivo direto do computador.<br><br>
+        Se nada resolver, tente em outro navegador (Chrome costuma ter menos bloqueios) ou em aba anônima com as proteções liberadas.${extra}
+      </div>
+    </div>`;
+  stream.appendChild(el); scrollDown();
+}
+
+/* ---------- Lição do dia ---------- */
+function startLesson(){
+  const t = themeOfDay();
+  sendTurn(`Vamos praticar o tema de hoje: ${t.es}. Comece me ensinando com uma pergunta.`);
+}
+
+/* ---------- Erros ---------- */
+function showErr(msg){
+  const e = document.createElement('div'); e.className='err'; e.textContent=msg;
+  document.body.appendChild(e);
+  setTimeout(()=>{ e.style.transition='.4s'; e.style.opacity='0'; setTimeout(()=>e.remove(),400); }, 3600);
+}
+
+/* ---------- Onboarding ---------- */
+function showOnboarding(){
+  const ov = document.createElement('div'); ov.className='overlay';
+  ov.innerHTML = `
+    <div class="card">
+      <h2>¡Hola! 👋</h2>
+      <p class="sub">Sou a Lucía. Vamos aprender espanhol conversando, um pouquinho todo dia. Qual é o seu ponto de partida?</p>
+      <button class="opt" data-lv="A1"><b>Começar do zero</b><small>Nunca estudei espanhol</small></button>
+      <button class="opt" data-lv="A2"><b>Sei o básico</b><small>Entendo palavras e frases soltas</small></button>
+      <button class="opt" data-lv="B1"><b>Consigo me virar</b><small>Seguro uma conversa simples</small></button>
+      <button class="opt" data-lv="B2"><b>Quero fluência</b><small>Falo bem, quero afinar</small></button>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelectorAll('.opt').forEach(b=>{
+    b.onclick = ()=>{
+      state.level = b.dataset.lv;
+      state.xp = levelObj(state.level).min;
+      onboarded = true; save(); ov.remove();
+      refreshLevelUI();
+      const g = GREETINGS[state.level];
+      history.push({role:'assistant', content:g.es});
+      addTutor({reply_es:g.es, reply_pt_hint:g.pt||null, correction:null, new_words:[], xp:0});
+    };
+  });
+}
+
+/* ---------- Ajustes ---------- */
+function showSettings(){
+  const ov = document.createElement('div'); ov.className='overlay';
+  ov.innerHTML = `
+    <div class="card" style="position:relative">
+      <button class="close-x" aria-label="Fechar">×</button>
+      <h2>Ajustes</h2>
+      <p class="sub">Você já praticou <b>${state.daysPracticed}</b> dia(s) e teve <b>${state.totalTurns}</b> conversas. ¡Bien!</p>
+      <div class="set-row">
+        <div><label>Sotaque</label><div class="desc">voz e reconhecimento</div></div>
+        <select id="selAcc">
+          <option value="es-ES">Espanha (es-ES)</option>
+          <option value="es-MX">México (es-MX)</option>
+          <option value="es-AR">Argentina (es-AR)</option>
+        </select>
+      </div>
+      <div class="set-row">
+        <div><label>Velocidade da fala</label><div class="desc">quão devagar a Lucía fala</div></div>
+        <input type="range" id="selRate" min="0.6" max="1.1" step="0.02" value="${state.settings.rate}">
+      </div>
+      <button class="btn" id="okSet">Salvar</button>
+      <button class="btn ghost" id="resetSet">Recomeçar do zero</button>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#selAcc').value = state.settings.accent;
+  const closeOv = ()=>ov.remove();
+  ov.querySelector('.close-x').onclick = closeOv;
+  ov.onclick = e=>{ if(e.target===ov) closeOv(); };
+  ov.querySelector('#okSet').onclick = ()=>{
+    state.settings.accent = ov.querySelector('#selAcc').value;
+    state.settings.rate = parseFloat(ov.querySelector('#selRate').value);
+    save(); closeOv();
+    speak('¡Perfecto!');
+  };
+  ov.querySelector('#resetSet').onclick = ()=>{
+    if(confirm('Recomeçar apaga seu nível e sequência. Tem certeza?')){
+      state = {level:'A1',xp:0,streak:0,lastPractice:null,daysPracticed:0,totalTurns:0,settings:state.settings};
+      history=[]; stream.innerHTML=''; onboarded=false; save(); closeOv();
+      refreshLevelUI(); showOnboarding();
+    }
+  };
+}
+
+/* ---------- Wire up ---------- */
+document.getElementById('orb').onclick = toggleListen;
+document.getElementById('send').onclick = ()=> sendTurn(document.getElementById('textin').value);
+document.getElementById('setBtn').onclick = showSettings;
+document.getElementById('themeChip').onclick = startLesson;
+
+const langSeg = document.getElementById('langSeg');
+langSeg.querySelectorAll('button').forEach(b=>{
+  b.onclick = ()=>{
+    inputLang = b.dataset.l;
+    langSeg.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+    state.settings.speakLang = inputLang; save();
+    if(listening && recog){ try{ recog.stop(); }catch(e){} }
+    if(!busy && !listening) setOrb('idle');
+  };
+});
+const ta = document.getElementById('textin');
+ta.addEventListener('input', ()=>{ ta.style.height='auto'; ta.style.height=Math.min(96,ta.scrollHeight)+'px'; });
+ta.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendTurn(ta.value); }});
+document.addEventListener('keydown', e=>{
+  if(e.code==='Space' && document.activeElement!==ta && !document.querySelector('.overlay')){
+    e.preventDefault(); toggleListen();
+  }
+});
+
+/* ---------- Boot ---------- */
+(async function(){
+  checkRunningFromFile();
+  await load();
+  if(!state.settings.speakLang) state.settings.speakLang = 'es';
+  inputLang = state.settings.speakLang;
+  document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('active', b.dataset.l===inputLang));
+  refreshLevelUI();
+  setOrb('idle');
+  const t = themeOfDay();
+  document.getElementById('themeName').textContent = t.es;
+  if(!onboarded){
+    showOnboarding();
+  }else{
+    const g = GREETINGS[state.level] || GREETINGS.A1;
+    const back = state.lastPractice===todayStr()
+      ? {es:'¡Hola otra vez! ¿Seguimos practicando?', pt:'Oi de novo! Vamos continuar praticando?'}
+      : {es:`¡Hola! Qué bueno verte. Llevas ${state.streak} día(s) seguidos. ¿Empezamos?`, pt:`Oi! Que bom te ver. Você está com ${state.streak} dia(s) seguidos. Vamos começar?`};
+    history.push({role:'assistant', content:back.es});
+    addTutor({reply_es:back.es, reply_pt_hint:back.pt, correction:null, new_words:[], xp:0});
+  }
 })();
 </script>
 </body>
