@@ -314,7 +314,7 @@ const GREETINGS = {
 
 let state = {
   level:'A1', xp:0, streak:0, lastPractice:null, daysPracticed:0, totalTurns:0,
-  settings:{ rate:0.92, accent:'es-ES', speakLang:'es' }
+  settings:{ rate:0.92, pitch:1.15, accent:'es-ES', speakLang:'es' }
 };
 let history = [];        // {role, content} para a API
 let onboarded = false;
@@ -419,7 +419,7 @@ function speakSeq(parts, orbFx=true){
   items.forEach((p,i)=>{
     const u = new SpeechSynthesisUtterance(p.text);
     const v = voiceFor(p.lang); if(v) u.voice = v;
-    u.lang = p.lang; u.rate = state.settings.rate; u.pitch = 1.15;
+    u.lang = p.lang; u.rate = state.settings.rate; u.pitch = state.settings.pitch ?? 1.15;
     if(orbFx && i===items.length-1){
       u.onend   = ()=>{ if(!listening) setOrb('idle'); };
       u.onerror = ()=> setOrb('idle');
@@ -800,6 +800,10 @@ function showSettings(){
         <div><label>Velocidade da fala</label><div class="desc">quão devagar a Lucía fala</div></div>
         <input type="range" id="selRate" min="0.6" max="1.1" step="0.02" value="${state.settings.rate}">
       </div>
+      <div class="set-row">
+        <div><label>Tom da voz</label><div class="desc">mais grave ⟷ mais doce e agudo</div></div>
+        <input type="range" id="selPitch" min="0.8" max="1.6" step="0.05" value="${state.settings.pitch ?? 1.15}">
+      </div>
       <button class="btn" id="okSet">Salvar</button>
       <button class="btn ghost" id="resetSet">Recomeçar do zero</button>
     </div>`;
@@ -811,6 +815,7 @@ function showSettings(){
   ov.querySelector('#okSet').onclick = ()=>{
     state.settings.accent = ov.querySelector('#selAcc').value;
     state.settings.rate = parseFloat(ov.querySelector('#selRate').value);
+    state.settings.pitch = parseFloat(ov.querySelector('#selPitch').value);
     save(); closeOv();
     speak('¡Perfecto!');
   };
