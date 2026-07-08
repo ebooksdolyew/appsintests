@@ -388,10 +388,26 @@ if('speechSynthesis' in window){
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 }
+/* nomes de vozes femininas comuns (macOS/iOS, Windows, Google/Android) */
+const FEMALE_HINTS = /(female|mujer|femenin|feminin|m[oó]nica|monica|paulina|ang[eé]lica|marisol|montse|helena|sabina|laura|elvira|dalia|luc[ií]a|esperanza|camila|sof[ií]a|paloma|ximena|luciana|maria|mar[ií]a|fernanda|francisca|joana|vit[oó]ria|raquel|heloisa|catarina|ines|zira|eva|carmen|penelope|isabela)/i;
+const MALE_HINTS   = /(male|hombre|masculin|diego|jorge|pablo|carlos|enrique|juan|miguel|ra[uú]l|daniel|alvaro|ricardo|felipe|ant[oó]nio|duarte|crist[oó]v[aã]o|lu[ií]s|thiago|julio|guillermo)/i;
+/* escolhe a melhor voz para o idioma, preferindo timbre feminino e caloroso */
 function voiceFor(lang){
-  return voices.find(v=>v.lang===lang)
-      || voices.find(v=>v.lang && v.lang.slice(0,2)===lang.slice(0,2))
-      || null;
+  const two = lang.slice(0,2);
+  const pool = voices.filter(v=>v.lang && (v.lang===lang || v.lang.slice(0,2)===two));
+  if(!pool.length) return null;
+  const score = v=>{
+    let s = 0;
+    if(v.lang===lang) s += 4;                    // sotaque exato
+    else if(v.lang.slice(0,2)===two) s += 2;
+    const n = (v.name||'')+' '+(v.voiceURI||'');
+    if(FEMALE_HINTS.test(n)) s += 6;             // voz feminina conhecida
+    if(MALE_HINTS.test(n))   s -= 8;             // evita voz masculina
+    if(/google/i.test(n))    s += 2;             // Google costuma ser mais natural e feminina
+    if(v.localService)       s += 1;
+    return s;
+  };
+  return pool.slice().sort((a,b)=>score(b)-score(a))[0] || null;
 }
 /* fala uma sequência de trechos, cada um no seu idioma/voz */
 function speakSeq(parts, orbFx=true){
@@ -403,7 +419,7 @@ function speakSeq(parts, orbFx=true){
   items.forEach((p,i)=>{
     const u = new SpeechSynthesisUtterance(p.text);
     const v = voiceFor(p.lang); if(v) u.voice = v;
-    u.lang = p.lang; u.rate = state.settings.rate; u.pitch = 1.02;
+    u.lang = p.lang; u.rate = state.settings.rate; u.pitch = 1.15;
     if(orbFx && i===items.length-1){
       u.onend   = ()=>{ if(!listening) setOrb('idle'); };
       u.onerror = ()=> setOrb('idle');
