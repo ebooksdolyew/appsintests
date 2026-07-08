@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Charla · teste de vozes da Lucía</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Epilogue:wght@400;500;600;700&display=swap');
+:root{
+  --bark:#E1D5BC; --bark-2:#ECE2CC; --bark-3:#E7DCC4;
+  --sand:#2C251F; --oat:#786A56; --terra:#C15E36; --ochre:#916516;
+  --moss:#5A6733; --sage:#4E5E33;
+  --line:rgba(44,37,31,.12); --line-2:rgba(44,37,31,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Epilogue',system-ui,sans-serif;background:var(--bark);color:var(--sand);
+  padding:22px 18px 60px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-family:'Fraunces',serif;font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.sub{color:var(--oat);font-size:13.5px;margin-bottom:20px}
+.pick{background:var(--bark-2);border:1px solid var(--ochre);border-radius:18px;padding:18px 18px;margin-bottom:18px}
+.pick .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ochre);margin-bottom:6px}
+.pick .name{font-family:'Fraunces',serif;font-size:22px;font-weight:600}
+.pick .meta{font-size:12.5px;color:var(--oat);margin-top:4px}
+.pick button{margin-top:12px;background:var(--terra);color:#fff;border:none;border-radius:12px;
+  padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.controls{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;align-items:end}
+.ctl{display:flex;flex-direction:column;gap:5px}
+.ctl label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--oat)}
+.ctl select,.ctl input[type=range]{font-family:inherit;color:var(--sand);accent-color:var(--terra)}
+.ctl select{background:var(--bark-3);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.ctl .val{font-size:12px;color:var(--ochre);font-weight:600}
+.group-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin:20px 0 8px;color:var(--sage)}
+.v{display:flex;align-items:center;gap:12px;background:var(--bark-2);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.v.chosen{border-color:var(--ochre);background:#EFE4CB}
+.v .info{min-width:0;flex:1}
+.v .vn{font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v .vl{font-size:12px;color:var(--oat);margin-top:1px}
+.v .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.badge{font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;border-radius:999px;padding:2px 8px}
+.b-fem{background:rgba(90,103,51,.16);color:var(--moss);border:1px solid rgba(90,103,51,.3)}
+.b-male{background:rgba(198,107,61,.12);color:var(--terra);border:1px solid rgba(198,107,61,.3)}
+.b-pick{background:var(--ochre);color:#fff}
+.v .play{flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--moss);color:#fff;
+  border:none;cursor:pointer;display:grid;place-items:center}
+.v .play svg{width:18px;height:18px}
+.note{background:var(--bark-3);border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+  font-size:13px;color:var(--sand);margin-bottom:18px}
+.empty{color:var(--oat);font-size:14px;padding:14px 2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Teste de vozes da Lucía</h1>
+  <p class="sub">As vozes vêm do seu aparelho/navegador. Aqui você vê qual a Charla escolheria e ouve cada uma.</p>
+
+  <div class="note" id="warn" style="display:none"></div>
+
+  <div class="controls">
+    <div class="ctl">
+      <label>Sotaque</label>
+      <select id="accent">
+        <option value="es-ES">Espanha (es-ES)</option>
+        <option value="es-MX">México (es-MX)</option>
+        <option value="es-AR">Argentina (es-AR)</option>
+      </select>
+    </div>
+    <div class="ctl">
+      <label>Tom (pitch) · <span class="val" id="pv">1.15</span></label>
+      <input type="range" id="pitch" min="0.8" max="1.6" step="0.05" value="1.15">
+    </div>
+    <div class="ctl">
+      <label>Velocidade · <span class="val" id="rv">0.92</span></label>
+      <input type="range" id="rate" min="0.6" max="1.1" step="0.02" value="0.92">
+    </div>
+  </div>
+
+  <div class="pick" id="pickCard">
+    <div class="lbl">A Lucía usaria, no sotaque escolhido</div>
+    <div class="name" id="pickName">carregando vozes…</div>
+    <div class="meta" id="pickMeta"></div>
+    <button id="pickPlay">▶ Ouvir a Lucía</button>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+/* ===== Lógica idêntica à do app Charla (voiceFor + hints) ===== */
+const FEMALE_HINTS = /(female|mujer|femenin|feminin|m[oó]nica|monica|paulina|ang[eé]lica|marisol|montse|helena|sabina|laura|elvira|dalia|luc[ií]a|esperanza|camila|sof[ií]a|paloma|ximena|luciana|maria|mar[ií]a|fernanda|francisca|joana|vit[oó]ria|raquel|heloisa|catarina|ines|zira|eva|carmen|penelope|isabela)/i;
+const MALE_HINTS   = /(male|hombre|masculin|diego|jorge|pablo|carlos|enrique|juan|miguel|ra[uú]l|daniel|alvaro|ricardo|felipe|ant[oó]nio|duarte|crist[oó]v[aã]o|lu[ií]s|thiago|julio|guillermo)/i;
+let voices = [];
+function voiceFor(lang){
+  const two = lang.slice(0,2);
+  const pool = voices.filter(v=>v.lang && (v.lang===lang || v.lang.slice(0,2)===two));
+  if(!pool.length) return null;
+  const score = v=>{
+    let s = 0;
+    if(v.lang===lang) s += 4;
+    else if(v.lang.slice(0,2)===two) s += 2;
+    const n = (v.name||'')+' '+(v.voiceURI||'');
+    if(FEMALE_HINTS.test(n)) s += 6;
+    if(MALE_HINTS.test(n))   s -= 8;
+    if(/google/i.test(n))    s += 2;
+    if(v.localService)       s += 1;
+    return s;
+  };
+  return pool.slice().sort((a,b)=>score(b)-score(a))[0] || null;
+}
+
+/* ===== UI ===== */
+const SAMPLE = '¡Hola! Soy Lucía, tu profesora de español. ¿Cómo estás hoy?';
+const $ = id => document.getElementById(id);
+
+function loadVoices(){ voices = speechSynthesis.getVoices(); render(); }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+else { $('warn').style.display='block'; $('warn').textContent='Seu navegador não tem síntese de voz (speechSynthesis). Tente Chrome ou Safari.'; }
+
+function say(v){
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(SAMPLE);
+  if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = $('accent').value; }
+  u.pitch = parseFloat($('pitch').value);
+  u.rate  = parseFloat($('rate').value);
+  speechSynthesis.speak(u);
+}
+function tagFor(v){
+  const n = (v.name||'')+' '+(v.voiceURI||'');
+  if(MALE_HINTS.test(n)) return {cls:'b-male',txt:'masculina?'};
+  if(FEMALE_HINTS.test(n)) return {cls:'b-fem',txt:'feminina'};
+  if(/google/i.test(n)) return {cls:'b-fem',txt:'feminina (Google)'};
+  return null;
+}
+const icoPlay = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+
+function render(){
+  const acc = $('accent').value;
+  $('pv').textContent = parseFloat($('pitch').value).toFixed(2);
+  $('rv').textContent = parseFloat($('rate').value).toFixed(2);
+
+  if(!voices.length){
+    $('pickName').textContent = 'Nenhuma voz carregada ainda';
+    $('pickMeta').textContent = 'Se ficar assim, seu sistema pode não ter vozes instaladas. Toque em ouvir mesmo assim — o navegador usa uma voz padrão.';
+    $('list').innerHTML = '';
+    return;
+  }
+
+  const chosen = voiceFor(acc);
+  if(chosen){
+    $('pickName').textContent = chosen.name;
+    const t = tagFor(chosen);
+    $('pickMeta').innerHTML = `${chosen.lang} · ${chosen.localService?'local do aparelho':'online'}` +
+      (t? ` — <b style="color:var(--moss)">${t.txt}</b>` : '');
+  } else {
+    $('pickName').textContent = 'Nenhuma voz de espanhol encontrada';
+    $('pickMeta').textContent = 'Instale uma voz de espanhol nas configurações do sistema para a Lucía soar nativa.';
+  }
+
+  // grupos: espanhol, português (apoio), resto
+  const es = voices.filter(v=>v.lang && v.lang.slice(0,2)==='es');
+  const pt = voices.filter(v=>v.lang && v.lang.slice(0,2)==='pt');
+  const other = voices.filter(v=>v.lang && !['es','pt'].includes(v.lang.slice(0,2)));
+
+  let html = '';
+  html += section('Vozes de espanhol', es, chosen);
+  html += section('Vozes de português (apoio em PT)', pt, null);
+  if(other.length) html += section('Outros idiomas', other, null);
+  $('list').innerHTML = html || '<div class="empty">Nenhuma voz disponível.</div>';
+
+  // liga os botões de play
+  document.querySelectorAll('[data-vi]').forEach(btn=>{
+    btn.onclick = ()=> say(voices[+btn.dataset.vi]);
+  });
+}
+function section(title, arr, chosen){
+  if(!arr.length) return `<div class="group-title">${title}</div><div class="empty">Nenhuma no sistema.</div>`;
+  let h = `<div class="group-title">${title}</div>`;
+  arr.forEach(v=>{
+    const i = voices.indexOf(v);
+    const t = tagFor(v);
+    const isPick = chosen && v===chosen;
+    let tags = '';
+    if(isPick) tags += '<span class="badge b-pick">a Lucía usa esta</span>';
+    if(t) tags += `<span class="badge ${t.cls}">${t.txt}</span>`;
+    h += `<div class="v${isPick?' chosen':''}">
+      <div class="info">
+        <div class="vn">${esc(v.name)}</div>
+        <div class="vl">${v.lang} · ${v.localService?'local':'online'}</div>
+        ${tags?`<div class="tags">${tags}</div>`:''}
+      </div>
+      <button class="play" data-vi="${i}" aria-label="Ouvir">${icoPlay}</button>
+    </div>`;
+  });
+  return h;
+}
+function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+$('accent').onchange = render;
+$('pitch').oninput = ()=>{ $('pv').textContent = parseFloat($('pitch').value).toFixed(2); render(); };
+$('rate').oninput  = ()=>{ $('rv').textContent = parseFloat($('rate').value).toFixed(2); render(); };
+$('pickPlay').onclick = ()=> say(voiceFor($('accent').value));
+</script>
+</body>
+</html>
