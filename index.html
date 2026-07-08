@@ -439,31 +439,57 @@ function tutorParts(d){
 
 /* ---------- Voz: reconhecimento ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null, listening = false;
+let recog = null, listening = false, manualStop = false;
 function recogLang(){ return inputLang==='pt' ? 'pt-BR' : state.settings.accent; }
+/* fica ouvindo continuamente — só termina quando o usuário toca o orbe de novo
+   (ou o navegador encerra sozinho, caso em que reiniciamos na hora, sem cortar a fala) */
 function initRecog(){
   if(!SR) return null;
   const r = new SR();
   r.lang = recogLang();
-  r.interimResults = false;
+  r.continuous = true;
+  r.interimResults = true;
   r.maxAlternatives = 1;
+  let finalText = '', noSpeech = false;
   r.onresult = e=>{
-    const text = e.results[0][0].transcript.trim();
-    if(text){ document.getElementById('textin').value = text; sendTurn(text); }
+    let interim = '';
+    for(let i=e.resultIndex; i<e.results.length; i++){
+      const res = e.results[i];
+      if(res.isFinal) finalText += (finalText ? ' ' : '') + res[0].transcript.trim();
+      else interim += res[0].transcript;
+    }
+    document.getElementById('textin').value = (finalText + ' ' + interim).trim();
   };
   r.onerror = e=>{
-    listening=false; setOrb('idle');
-    if(e.error==='not-allowed') showErr('Permita o acesso ao microfone para falar.');
-    else if(e.error==='no-speech') setStatus('Não te ouvi. Toque e fale de novo.');
+    if(e.error==='not-allowed'){
+      manualStop = true;
+      showErr('Permita o acesso ao microfone para falar.');
+    } else if(e.error==='no-speech'){
+      noSpeech = true;
+    } else if(e.error!=='aborted'){
+      manualStop = true; // erro sem recuperação — não insiste em reiniciar
+    }
   };
-  r.onend = ()=>{ listening=false; if(!busy) setOrb('idle'); };
+  r.onend = ()=>{
+    if(!manualStop && !noSpeech){
+      try{ r.start(); return; }catch(err){ /* segue para finalizar */ }
+    }
+    listening = false;
+    const text = document.getElementById('textin').value.trim();
+    if(!busy) setOrb('idle');
+    if(noSpeech && !text) setStatus('Não te ouvi. Toque e fale de novo.');
+    else if(text) sendTurn(text);
+    manualStop = false;
+  };
   return r;
 }
 function toggleListen(){
   if(busy) return;
   if(!SR){ showErr('Seu navegador não reconhece voz. Use o campo de texto — funciona igual.'); return; }
-  if(listening){ recog && recog.stop(); return; }
+  if(listening){ manualStop = true; recog && recog.stop(); return; }
   speechSynthesis.cancel();
+  document.getElementById('textin').value = '';
+  manualStop = false;
   recog = initRecog();
   try{ recog.lang = recogLang(); recog.start(); listening=true; setOrb('listening'); }
   catch(e){ listening=false; setOrb('idle'); }
@@ -476,7 +502,7 @@ function setOrb(mode){
   const idleTxt = inputLang==='pt' ? 'Toque no orbe e fale em português' : 'Toque no orbe e fale em espanhol';
   const map = {
     idle:idleTxt,
-    listening:'<b>Ouvindo…</b> fale agora',
+    listening:'<b>Ouvindo…</b> toque no orbe quando terminar',
     thinking:'Lucía está pensando…',
     speaking:'<b>Lucía</b> está falando…'
   };
